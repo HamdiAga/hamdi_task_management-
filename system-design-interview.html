@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تستعد لأسئلة الـ System Design في مقابلات العمل كمطور Full-Stack - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تستعد لأسئلة الـ System Design في مقابلات العمل كمطور Full-Stack</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/system-design.jpg" alt="System Design مقابلات" class="cover-image">
+
+                <p>أسئلة الـ System Design هي الكابوس الذي يقلق معظم المطورين في المقابلات. "صمم لي نظام متجر إلكتروني" أو "كيف تبني Twitter من الصفر؟" – تبدو أسئلة مخيفة، لكن الحقيقة أن لها منهجية واضحة. سأشاركك طريقتي في التحضير، مع سرد قصتي في تحليل متجر قبل بنائه كمثال حقيقي، ونصائح عملية للسوق الخليجي.</p>
+
+                <h2>1. ما الذي يبحث عنه المحاور في System Design؟</h2>
+                <p>المحاور لا يريد منك بناء غوغل في 45 دقيقة. هو يريد أن يرى:</p>
+                <ul>
+                    <li>قدرتك على تفكيك مشكلة كبيرة إلى أجزاء صغيرة.</li>
+                    <li>فهمك للمقايضات (Trade-offs): السرعة ضد الاتساق، البساطة ضد المرونة.</li>
+                    <li>معرفتك بالمكونات الأساسية: Load Balancer، CDN، Cache، Database، Message Queue.</li>
+                    <li>قدرتك على تقدير الأحجام: كم مستخدم؟ كم طلب في الثانية؟ كم تخزين؟</li>
+                </ul>
+
+                <h2>2. المنهجية العملية للإجابة</h2>
+                <ol>
+                    <li><strong>اجمع المتطلبات (Requirements):</strong> اسأل المحاور: من المستخدم؟ ما الميزات الأساسية؟ هل هو للقراءة أم للكتابة؟ كم عدد المستخدمين المتوقع؟</li>
+                    <li><strong>قدّر الأحجام (Back-of-the-envelope):</strong> كم طلب في الثانية؟ كم تخزين يومي؟ عرض النطاق الترددي؟ هذه الأرقام توجه كل قراراتك.</li>
+                    <li><strong>ارسم المخطط العام (High-Level Design):</strong> ارسم المكونات الرئيسية: Client → Load Balancer → Application Servers → Database → Cache.</li>
+                    <li><strong>تعمّق في المكونات (Deep Dive):</strong> اختر 2-3 مكونات رئيسية واشرحها بالتفصيل.</li>
+                    <li><strong>ناقش الاختناقات (Bottlenecks):</strong> أين سينهار النظام؟ كيف تمنع ذلك؟</li>
+                </ol>
+
+                <h2>3. مثال واقعي: تصميم متجر إلكتروني مثل سلة</h2>
+                <p>في إحدى المقابلات، طُلب مني تصميم نظام متجر إلكتروني. وهذا ملخص إجابتي:</p>
+                <ul>
+                    <li><strong>المتطلبات:</strong> بائع يضيف منتجات، زبون يتصفح ويشتري، نظام مدفوعات، لوحة تحكم للبائع.</li>
+                    <li><strong>التقديرات:</strong> 10,000 منتج، 1000 طلب يومياً، 50,000 زائر يومياً.</li>
+                    <li><strong>المخطط العام:</strong> CDN للصور والملفات الثابتة، Load Balancer أمام 3-5 خوادم تطبيق، قاعدة بيانات رئيسية MySQL مع Read Replicas، Redis للتخزين المؤقت، S3 للصور، Elasticsearch للبحث.</li>
+                    <li><strong>التعمق:</strong> اخترت شرح نظام الطلبات: استخدام جدول orders وجدول order_items، مع Webhooks من بوابات الدفع، واستخدام Message Queue لمعالجة الطلبات بشكل غير متزامن.</li>
+                    <li><strong>الاختناقات:</strong> البحث عن المنتجات – حللته باستخدام Elasticsearch مع مزامنة مستمرة من MySQL عبر CDC أو Events.</li>
+                </ul>
+
+                <h2>4. أدوات وتقنيات يجب أن تعرفها</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>المكون</th><th>الخيارات الشائعة</th><th>متى تستخدمه</th></tr></thead>
+                    <tbody>
+                        <tr><td>Load Balancer</td><td>Nginx, HAProxy, AWS ALB</td><td>توزيع الحمل بين السيرفرات</td></tr>
+                        <tr><td>CDN</td><td>Cloudflare, AWS CloudFront</td><td>تسريع الملفات الثابتة والصور</td></tr>
+                        <tr><td>Cache</td><td>Redis, Memcached</td><td>تخزين مؤقت للبيانات الساخنة</td></tr>
+                        <tr><td>Message Queue</td><td>RabbitMQ, Redis Queue, SQS</td><td>معالجة غير متزامنة للمهام</td></tr>
+                        <tr><td>بحث نصي</td><td>Elasticsearch, Meilisearch</td><td>بحث سريع في المنتجات والمحتوى</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>5. نصيحتي للتحضير</h2>
+                <ul>
+                    <li>ادرس أمثلة حقيقية: كيف يعمل Twitter، Netflix، Uber – هناك مقالات وكتب رائعة عن بنيتها.</li>
+                    <li>تدرب على الورقة والقلم: ارسم المخططات، لا تكتفِ بالقراءة.</li>
+                    <li>فكر بصوت عالٍ: في المقابلة، كل فكرة تقولها مهمة، حتى لو كانت ناقصة.</li>
+                    <li>ركز على السوق الذي تعرفه: إذا سألك المحاور عن تصميم نظام، اربطه بخبرتك في المتاجر الإلكترونية وسلة وزِد وشوبفاي. هذا يمنحك مصداقية هائلة.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-gem"></i> <strong>سر النجاح:</strong> ليس عليك معرفة كل شيء. قل بثقة: "هذا خارج نطاق خبرتي حالياً، لكنني سأبحث عن الحل باستخدام X أو Y." الصدق مع الفضول أقوى من الادعاء بمعرفة كل شيء.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>أسئلة System Design تقيس طريقة تفكيرك، لا حفظك. اتبع المنهجية: اجمع المتطلبات، قدّر الأحجام، ارسم المخطط، تعمق في التفاصيل، ناقش الاختناقات. اربط إجابتك بخبرتك الحقيقية في المتاجر الإلكترونية، وستتميز عن غيرك.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

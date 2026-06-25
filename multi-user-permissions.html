@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تنشئ نظام صلاحيات متعدد المستخدمين بأمان من الصفر - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تنشئ نظام صلاحيات متعدد المستخدمين (Admin, Editor, Customer) بأمان من الصفر</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/user-permissions.jpg" alt="نظام صلاحيات متعدد المستخدمين" class="cover-image">
+
+                <p>كل متجر إلكتروني أو تطبيق يحتاج إلى نظام صلاحيات. مالك المتجر لا يمكنه إعطاء موظف الطلبات صلاحية تغيير الأسعار، والمندوب لا يجب أن يرى تقارير الأرباح. في هذا المقال، سأشرح لك كيف تبني نظام صلاحيات متدرج (RBAC – Role-Based Access Control) من الصفر، مع أمثلة من Laravel وNode.js، من واقع تجربتي مع متاجر سلة وزِد.</p>
+
+                <h2>1. لماذا RBAC وليس مجرد عمود is_admin؟</h2>
+                <p>عمود is_admin (true/false) يعطيك حالتين فقط. لكن ماذا لو احتجت 4 أدوار أو 10 أدوار بصلاحيات متداخلة؟ نظام RBAC يفصل بين الأدوار (Roles) والصلاحيات (Permissions)، مما يمنحك مرونة لا نهائية:</p>
+                <ul>
+                    <li><strong>Admin:</strong> كل الصلاحيات.</li>
+                    <li><strong>Editor:</strong> إدارة المنتجات والمحتوى، بدون الوصول للتقارير المالية.</li>
+                    <li><strong>Order Manager:</strong> رؤية الطلبات وتحديث حالتها فقط.</li>
+                    <li><strong>Customer:</strong> رؤية طلباته الخاصة فقط.</li>
+                </ul>
+
+                <h2>2. هيكل قاعدة البيانات</h2>
+                <p>التصميم الكلاسيكي لـ RBAC يستخدم 5 جداول:</p>
+                <div class="code-block"><pre><code>users: id, name, email, ...
+roles: id, name (admin, editor, ...)
+permissions: id, name (edit-products, view-orders, ...)
+role_permission: role_id, permission_id (الربط بين الأدوار والصلاحيات)
+user_role: user_id, role_id (الربط بين المستخدمين والأدوار)</code></pre></div>
+                <p>هذا الهيكل يسمح لك بإعطاء أكثر من دور للمستخدم الواحد، وأكثر من صلاحية للدور الواحد. في Laravel، استخدم حزمة spatie/laravel-permission لتوفير الوقت. لكني سأريك كيف تبنيها يدوياً.</p>
+
+                <h2>3. البناء في Laravel – Middleware مخصص</h2>
+                <div class="code-block"><pre><code>// middleware/CheckPermission.php
+public function handle($request, $next, $permission) {
+    if (!auth()->user()->hasPermission($permission)) {
+        abort(403, 'غير مصرح لك بهذا الإجراء');
+    }
+    return $next($request);
+}
+
+// في User model:
+public function hasPermission($permission) {
+    return $this->roles()->whereHas('permissions', function($q) use ($permission) {
+        $q->where('name', $permission);
+    })->exists() || $this->hasRole('admin');
+}
+
+// في routes/api.php:
+Route::middleware('auth:sanctum')->group(function() {
+    Route::get('/orders', [OrderController::class, 'index'])
+         ->middleware('permission:view-orders');
+    Route::post('/products', [ProductController::class, 'store'])
+         ->middleware('permission:create-products');
+});</code></pre></div>
+
+                <h2>4. في Node.js – Middleware مع JWT</h2>
+                <div class="code-block"><pre><code>// middleware/permission.js
+function checkPermission(permission) {
+    return (req, res, next) => {
+        const user = req.user;
+        if (user.roles.some(role => role === 'admin')) return next();
+        if (user.permissions.some(perm => perm === permission)) return next();
+        return res.status(403).json({ error: 'غير مصرح' });
+    };
+}
+
+// usage
+app.get('/orders', authenticate, checkPermission('view-orders'), orderController.list);</code></pre></div>
+
+                <h2>5. حماية البيانات – صلاحيات على مستوى الصف</h2>
+                <p>الصلاحية لا تقتصر على "هل يرى صفحة الطلبات؟". أحياناً تريد أن يرى المندوب طلباته هو فقط:</p>
+                <div class="code-block"><pre><code>// Laravel Policy
+class OrderPolicy {
+    public function view($user, $order) {
+        if ($user->hasRole('admin')) return true;
+        if ($user->hasRole('delivery') && $order->delivery_id === $user->id) return true;
+        if ($user->hasRole('customer') && $order->user_id === $user->id) return true;
+        return false;
+    }
+}</code></pre></div>
+
+                <h2>6. مثال من السوق – لوحة تحكم متجر سلة</h2>
+                <p>في أحد مشاريع تطوير لوحة تحكم لمتجر سلة، كان صاحب المتجر يريد:</p>
+                <ul>
+                    <li>موظف طلبات يرى الطلبات ويغير حالتها فقط.</li>
+                    <li>مصمم منتجات يضيف منتجات وصور بدون لمس الأسعار.</li>
+                    <li>محاسب يرى التقارير المالية فقط.</li>
+                </ul>
+                <p>بنينا نظام RBAC بالكامل. في الأسبوع الأول، اكتشفنا أن المصمم كان يغير الأسعار "بالخطأ" قبل النظام الجديد. بعد تطبيق الصلاحيات، اختفت هذه المشكلة تماماً، وأصبح صاحب المتجر ينام مرتاحاً.</p>
+
+                <h2>نصائح أمنية</h2>
+                <ul>
+                    <li>لا تثق بالـ Frontend أبداً. الصلاحيات يجب أن تتحقق دائماً في الـ Backend.</li>
+                    <li>استخدم Gates و Policies في Laravel، فهي أنظف من فحص الصلاحيات يدوياً في كل Controller.</li>
+                    <li>اختبر الصلاحيات بكتابة Feature Tests تحاول فيها الوصول إلى موارد بدون صلاحية وتتأكد من ظهور 403.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>نظام الصلاحيات ليس كمالياً، بل هو أساس الأمان في أي تطبيق متعدد المستخدمين. استثمر وقتاً في تصميمه جيداً من البداية، لأنه إعادة هيكلته لاحقاً أصعب بكثير.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

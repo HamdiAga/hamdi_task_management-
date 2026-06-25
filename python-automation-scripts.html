@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بايثون في سوق العمل: 5 اسكريبتات أوتوماتيكية وفرت عليّ 20 ساعة أسبوعياً - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">بايثون في سوق العمل: 5 اسكريبتات أوتوماتيكية وفرت عليّ 20 ساعة أسبوعياً</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Automation & AI</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>بايثون ليست فقط لغة تحليل بيانات أو ذكاء اصطناعي، بل هي سلاح سري للأتمتة. في عملي اليومي كمطوّر Full-Stack أدير متاجر إلكترونية ومنصات، وفرت عليّ اسكريبتات بايثون البسيطة ما لا يقل عن 20 ساعة أسبوعياً من العمل اليدوي الممل. في هذا المقال، سأشاركك 5 اسكريبتات حقيقية أستخدمها، مع الكود الكامل، لتتمكن من تطبيقها فوراً.</p>
+
+                <h2>1. اسكريبت تحميل تقارير المبيعات اليومية وإرسالها بالإيميل</h2>
+                <p>كنت أقضي 30 دقيقة يومياً في تصدير تقرير مبيعات من لوحة تحكم المتجر، تنسيقه، وإرساله للإدارة. هذا الاسكريبت أنهى هذه المهمة تماماً:</p>
+                <div class="code-block"><pre><code>import smtplib
+import csv
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import datetime
+import mysql.connector
+
+# الاتصال بقاعدة البيانات
+db = mysql.connector.connect(
+    host="localhost", user="root", password="pass", database="store"
+)
+cursor = db.cursor()
+
+# جلب مبيعات اليوم
+today = datetime.date.today()
+cursor.execute("""
+    SELECT id, customer_name, total, status
+    FROM orders WHERE DATE(created_at) = %s
+""", (today,))
+orders = cursor.fetchall()
+
+# حفظ التقرير كـ CSV
+filename = f"sales_report_{today}.csv"
+with open(filename, 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerow(["رقم الطلب", "العميل", "الإجمالي", "الحالة"])
+    writer.writerows(orders)
+
+# إرسال الإيميل
+msg = MIMEMultipart()
+msg['Subject'] = f'تقرير المبيعات اليومي - {today}'
+msg['From'] = 'reports@store.com'
+msg['To'] = 'manager@store.com'
+
+with open(filename, 'rb') as attachment:
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(attachment.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', f'attachment; filename={filename}')
+    msg.attach(part)
+
+with smtplib.SMTP('smtp.gmail.com', 587) as server:
+    server.starttls()
+    server.login('reports@store.com', 'password')
+    server.send_message(msg)
+
+print(f"تم إرسال تقرير {today}")</code></pre></div>
+                <p>هذا الاسكريبت وفر عليّ 30 دقيقة × 30 يوماً = 15 ساعة شهرياً. شغّلته على cron job يومياً الساعة 8 صباحاً.</p>
+
+                <h2>2. اسكريبت تنظيف قاعدة البيانات من العربات المهملة</h2>
+                <p>متجر إلكتروني يراكم آلاف العربات المهملة أسبوعياً، مما يثقل قاعدة البيانات ويبطئ الاستعلامات. هذا الاسكريبت يحذف العربات التي مضى عليها أكثر من 7 أيام:</p>
+                <div class="code-block"><pre><code>import mysql.connector
+from datetime import datetime, timedelta
+
+db = mysql.connector.connect(
+    host="localhost", user="root", password="pass", database="store"
+)
+cursor = db.cursor()
+
+cutoff_date = datetime.now() - timedelta(days=7)
+cursor.execute("""
+    DELETE FROM cart_items WHERE cart_id IN (
+        SELECT id FROM carts WHERE created_at < %s AND status = 'abandoned'
+    )
+""", (cutoff_date,))
+cursor.execute("DELETE FROM carts WHERE created_at < %s AND status = 'abandoned'", (cutoff_date,))
+db.commit()
+
+print(f"تم حذف العربات المهملة قبل {cutoff_date}")
+db.close()</code></pre></div>
+
+                <h2>3. اسكريبت مراقبة أسعار المنافسين</h2>
+                <p>في التجارة الإلكترونية، معرفة أسعار منافسيك تمنحك أفضلية. هذا الاسكريبت يزور صفحات منتجات المنافسين كل صباح ويستخرج الأسعار ويخزنها في جدول:</p>
+                <div class="code-block"><pre><code>import requests
+from bs4 import BeautifulSoup
+import mysql.connector
+from datetime import datetime
+
+db = mysql.connector.connect(
+    host="localhost", user="root", password="pass", database="store"
+)
+cursor = db.cursor()
+
+# جلب روابط المنافسين من قاعدة البيانات
+cursor.execute("SELECT id, competitor_url FROM competitor_products")
+products = cursor.fetchall()
+
+for product_id, url in products:
+    response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+    soup = BeautifulSoup(response.text, 'html.parser')
+    price_el = soup.find('span', class_='price')
+    if price_el:
+        price = float(price_el.text.replace('ر.س', '').strip())
+        cursor.execute("""
+            INSERT INTO competitor_prices (product_id, price, checked_at)
+            VALUES (%s, %s, %s)
+        """, (product_id, price, datetime.now()))
+        print(f"تم تسجيل سعر المنتج {product_id}: {price} ر.س")
+
+db.commit()
+db.close()</code></pre></div>
+
+                <h2>4. اسكريبت إعادة تسمية وتنظيم صور المنتجات</h2>
+                <p>عند استلام صور منتجات من المصور، تكون بأسماء عشوائية مثل <code>DSC_001.jpg</code>. هذا الاسكريبت يعيد تسميتها بناءً على SKU المنتج من ملف Excel:</p>
+                <div class="code-block"><pre><code>import os
+import pandas as pd
+
+df = pd.read_excel('products.xlsx')
+image_folder = './product_images/'
+
+for index, row in df.iterrows():
+    sku = row['sku']
+    old_name = row['original_filename']
+    old_path = os.path.join(image_folder, old_name)
+    new_path = os.path.join(image_folder, f"{sku}.jpg")
+    if os.path.exists(old_path):
+        os.rename(old_path, new_path)
+        print(f"تم: {old_name} -> {sku}.jpg")
+
+print("انتهت إعادة التسمية")</code></pre></div>
+
+                <h2>5. اسكريبت إشعار واتساب عند طلب جديد</h2>
+                <p>بدلاً من تفقد لوحة التحكم كل 5 دقائق، هذا الاسكريبت يراقب قاعدة البيانات ويرسل إشعار واتساب فور وصول طلب جديد:</p>
+                <div class="code-block"><pre><code>import time
+import mysql.connector
+import requests
+
+WHATSAPP_API_URL = "https://api.whatsapp.com/send"
+PHONE = "966512345678"
+
+db = mysql.connector.connect(
+    host="localhost", user="root", password="pass", database="store"
+)
+cursor = db.cursor()
+
+# آخر order_id تم إشعاره
+last_id = 0
+cursor.execute("SELECT MAX(id) FROM orders")
+result = cursor.fetchone()
+if result[0]:
+    last_id = result[0]
+
+print(f"بدء المراقبة... آخر طلب: {last_id}")
+
+while True:
+    cursor.execute("SELECT id, customer_name, total FROM orders WHERE id > %s", (last_id,))
+    new_orders = cursor.fetchall()
+    for order in new_orders:
+        order_id, customer, total = order
+        message = f"🛒 طلب جديد #{order_id}\nالعميل: {customer}\nالإجمالي: {total} ر.س"
+        # هنا تستخدم API واتساب الفعلي (مثل Twilio أو Wati)
+        print(f"إرسال إشعار: {message}")
+        last_id = order_id
+    time.sleep(60)  # تحقق كل دقيقة</code></pre></div>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-clock"></i> <strong>حصيلة التوفير:</strong> هذه الاسكريبتات الخمسة وفرت عليّ: 15 ساعة (تقارير) + 2 ساعة (تنظيف) + 3 ساعات (أسعار) + 1 ساعة (صور) + مراقبة مستمرة (طلبات) = أكثر من 20 ساعة أسبوعياً. الوقت الذي وفرته استثمرته في تطوير ميزات جديدة.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>بايثون هي اللغة المثالية للأتمتة. ابدأ بالمهام التي تكررها يومياً، واكتب لها اسكريبتاً. حتى 15 دقيقة يومياً تتحول إلى 7 ساعات شهرياً عند أتمتتها. تذكر: أي مهمة تفعلها أكثر من مرتين، تستحق أن تؤتمت.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="automation-ai.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Automation & AI</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

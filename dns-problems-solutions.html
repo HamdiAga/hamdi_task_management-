@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشاكل DNS التي تصيب المبرمج بالجنون وحلولها النهائية - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">مشاكل DNS التي تصيب المبرمج بالجنون وحلولها النهائية</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Hosting & Domains</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>كم مرة غيّرت NameServers وانتظرت 24 ساعة، والموقع لا يعمل؟ أو أضفت A Record واكتشفت أن الإيميل توقف؟ DNS هو أكثر جزء يثير جنون المطورين لأنه بطيء الانتشار وصعب التتبع. بعد سنوات من التعامل مع عشرات النطاقات، سأعطيك أشهر 5 مشاكل DNS وحلولها النهائية، لتوفر على نفسك ساعات من الحيرة.</p>
+
+                <h2>1. المشكلة: الموقع لا يعمل بعد تغيير DNS (خطأ ERR_NAME_NOT_RESOLVED)</h2>
+                <p><strong>السبب:</strong> تغيير NameServers لم ينتشر بعد، أو أخطأت في كتابة السجلات.</p>
+                <p><strong>الحل:</strong></p>
+                <ul>
+                    <li>تأكد من كتابة NameServers بشكل صحيح. Cloudflare يعطيك nameserverين، تأكد من نسخهما حرفياً بدون مسافات إضافية.</li>
+                    <li>استخدم أداة <a href="https://www.whatsmydns.net" target="_blank">whatsmydns.net</a> لترى انتشار DNS عالمياً. إذا كانت معظم المواقع تشير إلى السيرفر الجديد، فالمشكلة في مزود الإنترنت المحلي لديك فقط (سيحل خلال ساعات).</li>
+                    <li>جرّب تغيير DNS على جهازك إلى 8.8.8.8 (Google DNS) لتتأكد أن المشكلة ليست من مزود خدمتك.</li>
+                </ul>
+
+                <h2>2. المشكلة: الإيميل توقف بعد تغيير DNS</h2>
+                <p><strong>السبب:</strong> نسيت نقل سجلات MX (Mail Exchange) إلى DNS الجديد.</p>
+                <p><strong>الحل:</strong></p>
+                <ul>
+                    <li>اذهب إلى DNS القديم، وانسخ كل سجلات MX.</li>
+                    <li>أضفها يدوياً في DNS الجديد (Cloudflare أو لوحة تحكم الاستضافة).</li>
+                    <li>تأكد أيضاً من سجلات TXT (SPF، DKIM، DMARC) لأنها ضرورية لمصادقة الإيميلات ومنعها من الوصول لـ Spam.</li>
+                </ul>
+
+                <h2>3. المشكلة: نطاق فرعي (Subdomain) لا يعمل</h2>
+                <p><strong>السبب:</strong> إما أن CNAME غير مضبوط، أو لا يوجد Virtual Host على السيرفر لهذا النطاق الفرعي.</p>
+                <p><strong>الحل:</strong></p>
+                <ul>
+                    <li>تأكد من إضافة CNAME أو A Record للنطاق الفرعي (مثل <code>blog.example.com</code>) في لوحة DNS.</li>
+                    <li>تأكد من أن السيرفر (Nginx/Apache) يملك تكويناً (Virtual Host) يستمع لهذا النطاق الفرعي. في aaPanel، اذهب إلى Website > Add Domain وأضف النطاق الفرعي.</li>
+                    <li>اختبر باستخدام <code>ping blog.example.com</code> لترى إن كان يتحول إلى IP صحيح.</li>
+                </ul>
+
+                <h2>4. المشكلة: موقعك يعمل على www ولكن لا يعمل بدون www (أو العكس)</h2>
+                <p><strong>السبب:</strong> أحد السجلين (A Record للنطاق المجرد أو CNAME لـ www) مفقود.</p>
+                <p><strong>الحل:</strong></p>
+                <ul>
+                    <li>تأكد من وجود A Record لـ <code>@</code> (النطاق المجرد) يشير إلى IP السيرفر.</li>
+                    <li>تأكد من وجود CNAME لـ <code>www</code> يشير إلى <code>@</code> أو إلى IP السيرفر مباشرة.</li>
+                    <li>في السيرفر، تأكد من أن Nginx/Apache يستمع لكلا النسختين. يمكنك إضافة redirect من www إلى بدون www (أو العكس) باستخدام قاعدة بسيطة.</li>
+                </ul>
+
+                <h2>5. المشكلة: شهادة SSL لا تعمل بعد تغيير DNS</h2>
+                <p><strong>السبب:</strong> إما أن DNS لم ينتشر بعد، أو أن Cloudflare مضبوط على Flexible بدلاً من Full.</p>
+                <p><strong>الحل:</strong></p>
+                <ul>
+                    <li>انتظر حتى ينتشر DNS (عادة 5-30 دقيقة، لكن قد يصل إلى 24 ساعة).</li>
+                    <li>إذا كنت تستخدم Cloudflare، تأكد من SSL/TLS مضبوط على Full أو Full (strict).</li>
+                    <li>إذا كنت تستخدم Let's Encrypt مباشرة على السيرفر، تأكد من أن النطاق يشير فعلاً إلى السيرفر قبل تشغيل Certbot، وإلا سيفشل في التحقق.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-tools"></i> <strong>أدوات تشخيص DNS:</strong> <code>dig yourdomain.com ANY</code> في الطرفية يعطيك كل سجلات DNS للنطاق. أداة <a href="https://dnschecker.org" target="_blank">dnschecker.org</a> تريك انتشار DNS عبر 30 موقعاً عالمياً.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>مشاكل DNS بطبيعتها مؤقتة، لكن يمكنك تجنب معظمها بالتأكد من نقل كل السجلات (A، CNAME، MX، TXT)، واختيار TTL منخفض قبل التغيير، واستخدام أدوات فحص الانتشار. تذكر: DNS لا ينتشر فوراً، لكنه سينتشر. الصبر هو نصف الحل.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="hosting-domains.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Hosting & Domains</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

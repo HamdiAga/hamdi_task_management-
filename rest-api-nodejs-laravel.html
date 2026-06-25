@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تبني REST API آمناً وسريعاً لتطبيق الموبايل من الصفر (Node.js/Laravel) - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تبني REST API آمناً وسريعاً لتطبيق الموبايل من الصفر (Node.js/Laravel)</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/api-security.jpg" alt="بناء REST API آمن وسريع" class="cover-image">
+
+                <p>بناء REST API ليس مجرد إخراج JSON من قاعدة البيانات، بل هو هندسة متكاملة تشمل الأمان، السرعة، التوثيق، والنشر. سأشرح لك كيف تبدأ من الصفر وتصل إلى API جاهز للإنتاج، باسطاً خبرتي في ربط تطبيقات الموبايل بمتاجر سلة وزِد وشوبفاي في السوق السعودي.</p>
+
+                <h2>1. فلسفة REST قبل الكود</h2>
+                <ul>
+                    <li>التفكير بالمصادر (Resources) وليس الإجراءات: مثلاً /products وليس /getProducts.</li>
+                    <li>الطرق (HTTP Methods) تعبّر عن الفعل: GET للقراءة، POST للإنشاء، PUT/PATCH للتحديث، DELETE للحذف.</li>
+                    <li>التدرج المنطقي: /categories/5/products للحصول على منتجات فئة رقم 5.</li>
+                </ul>
+
+                <h2>2. هيكل المشروع الاحترافي</h2>
+                <div class="code-block"><pre><code>src/
+├── Controllers/       # طبقة استقبال الطلبات
+├── Services/          # طبقة منطق العمل (Business Logic)
+├── Repositories/      # طبقة التعامل مع قاعدة البيانات (اختياري)
+├── Models/
+├── Middleware/
+├── Requests/          # التحقق من المدخلات
+├── Resources/         # تنسيق المخرجات (API Resources)
+├── Exceptions/        # معالجة مخصصة للأخطاء
+└── Tests/</code></pre></div>
+
+                <h2>3. المصادقة والأمان – تفصيل معمق</h2>
+                <p><strong>مقارنة بين JWT و OAuth2 و Laravel Sanctum</strong></p>
+                <table class="comparison-table">
+                    <thead><tr><th>الطريقة</th><th>الاستخدام المثالي</th><th>الإيجابيات</th><th>السلبيات</th></tr></thead>
+                    <tbody>
+                        <tr><td>JWT</td><td>تطبيقات الموبايل الخالصة</td><td>سريع، لا يحتاج جلسة</td><td>انتهاء التوكن وإلغاؤه معقد</td></tr>
+                        <tr><td>OAuth2</td><td>عندما تحتاج لدخول عبر منصات أخرى</td><td>معياري، آمن جداً</td><td>معقد التنفيذ</td></tr>
+                        <tr><td>Sanctum (Laravel)</td><td>SPA وموبايل مع Laravel</td><td>بسيط، يدعم API Tokens</td><td>خاص بـ Laravel</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>أفضل ممارسات JWT:</strong></p>
+                <ul>
+                    <li>Access Token: ينتهي خلال 15 دقيقة.</li>
+                    <li>Refresh Token: ينتهي خلال أسبوعين، يخزّن مشفراً في قاعدة البيانات.</li>
+                    <li>استخدم blacklist لتوكّنات تم إبطالها.</li>
+                    <li>خزّن التوكن في الـ Secure Storage في تطبيق الموبايل وليس في Shared Preferences.</li>
+                </ul>
+                <p><strong>حماية متقدمة:</strong></p>
+                <ul>
+                    <li>تفعيل HTTPS إجباري.</li>
+                    <li>إضافة هيدر X-Frame-Options: DENY.</li>
+                    <li>استخدام CORS مخصص (كما في المقال السابق).</li>
+                    <li>CSRF لا ينطبق على API عديم الحالة (stateless)، لكن استخدم SameSite=Strict للكعكات إن وجدت.</li>
+                </ul>
+
+                <h2>4. بنية الاستجابة الموحدة</h2>
+                <div class="code-block"><pre><code>// نجاح
+{
+  "success": true,
+  "data": { ... },
+  "message": "تم بنجاح",
+  "meta": {
+    "current_page": 1,
+    "last_page": 10,
+    "total": 95
+  }
+}
+
+// خطأ
+{
+  "success": false,
+  "error": {
+    "code": 422,
+    "message": "خطأ في التحقق",
+    "details": {
+      "email": ["البريد مستخدم مسبقاً"]
+    }
+  }
+}</code></pre></div>
+
+                <h2>5. تحسين الأداء – طبقات متعددة</h2>
+                <p><strong>أ. التخزين المؤقت (Caching):</strong></p>
+                <ul>
+                    <li>استخدم Redis لنتائج الاستعلامات الثقيلة.</li>
+                    <li>استراتيجية Cache-Aside: اقرأ من الكاش أولاً، إذا لم يوجد، من قاعدة البيانات ثم خزّن في الكاش.</li>
+                    <li>احذف الكاش عند تحديث الموارد عبر Observers في Laravel أو Events في Node.js.</li>
+                </ul>
+                <p><strong>ب. تحسين الاستعلامات:</strong></p>
+                <ul>
+                    <li>Eager Loading باستمرار: Product::with('images', 'category')->paginate().</li>
+                    <li>Select الحقول المطلوبة فقط: ->select('id', 'name', 'price').</li>
+                    <li>Pagination لكل قائمة، حتى لو كانت صغيرة، للحماية من النمو.</li>
+                </ul>
+                <p><strong>ج. ضغط البيانات:</strong></p>
+                <ul>
+                    <li>تفعيل Gzip/Brotli على مستوى السيرفر (Nginx/Apache).</li>
+                    <li>إرسال هيدر Accept-Encoding: gzip من العميل.</li>
+                </ul>
+                <p><strong>د. المعالجة غير المتزامنة:</strong></p>
+                <ul>
+                    <li>استخدم Queues للمهام الثقيلة (إرسال بريد، توليد تقرير، تحسين صور). في Laravel: php artisan queue:work مع Redis، وفي Node.js: استخدم BullMQ أو RabbitMQ.</li>
+                </ul>
+
+                <h2>6. التحقق من المدخلات بعمق</h2>
+                <p><strong>في Laravel:</strong></p>
+                <div class="code-block"><pre><code>class StoreOrderRequest extends FormRequest {
+    public function rules() {
+        return [
+            'products' => 'required|array|min:1',
+            'products.*.id' => 'required|exists:products,id',
+            'products.*.quantity' => 'required|integer|min:1',
+            'payment_method' => 'required|in:cod,card,tamara',
+        ];
+    }
+}</code></pre></div>
+                <p><strong>في Node.js (Joi):</strong></p>
+                <div class="code-block"><pre><code>const orderSchema = Joi.object({
+  products: Joi.array().items(Joi.object({
+    id: Joi.number().integer().required(),
+    quantity: Joi.number().integer().min(1).required()
+  })).min(1).required(),
+  payment_method: Joi.string().valid('cod', 'card', 'tamara').required()
+});</code></pre></div>
+
+                <h2>7. توثيق API</h2>
+                <ul>
+                    <li>استخدم Swagger/OpenAPI عبر حزمة darkaonline/l5-swagger في Laravel، أو swagger-jsdoc في Node.js.</li>
+                    <li>وثّق كل Endpoint بـ: الوصف، المدخلات، المخرجات، رموز الأخطاء المحتملة.</li>
+                    <li>أضف رابط التوثيق في رد GET / ليسهل على مطوري الموبايل الوصول.</li>
+                </ul>
+
+                <h2>8. الاختبارات</h2>
+                <ul>
+                    <li>Unit Tests للخدمات (Services).</li>
+                    <li>Feature Tests للـ Endpoints:</li>
+                </ul>
+                <div class="code-block"><pre><code>public function test_user_can_login() {
+    $user = User::factory()->create(['password' => bcrypt('secret')]);
+    $response = $this->postJson('/api/login', [
+        'email' => $user->email,
+        'password' => 'secret'
+    ]);
+    $response->assertStatus(200)->assertJsonStructure(['token']);
+}</code></pre></div>
+                <ul>
+                    <li>استخدم Postman Collections مع سكريبتات اختبار تلقائية.</li>
+                </ul>
+
+                <h2>9. نشر API ومراقبته</h2>
+                <ul>
+                    <li>استخدم Docker لحزم التطبيق بنفس البيئة.</li>
+                    <li>Nginx Reverse Proxy لتوجيه الطلبات للتطبيق.</li>
+                    <li>Supervisor أو PM2 لضمان بقاء العملية حية بعد التعطل.</li>
+                    <li>مراقبة الأداء: دمج أدوات مثل Laravel Telescope أو New Relic لرؤية الاستعلامات البطيئة، الأخطاء، ومعدل الطلبات.</li>
+                </ul>
+
+                <h2>مثال من واقع السوق (موسّع)</h2>
+                <p>في أحد مشاريع تطبيق توصيل مطاعم في الرياض، بنيت API بـ Laravel. بعد 6 أشهر، بدأ التطبيق يعاني بطئاً وقت الذروة. طبقنا:</p>
+                <ul>
+                    <li>Redis لذاكرة التخزين المؤقت لقوائم المطاعم والمنتجات.</li>
+                    <li>أزلنا N+1 Queries.</li>
+                    <li>أضفنا Queue لإرسال إشعارات Firebase.</li>
+                </ul>
+                <p>النتيجة: زمن الاستجابة انخفض من 1.2 ثانية إلى 180 مللي ثانية، وتحمل التطبيق 5 أضعاف المستخدمين المتزامنين.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

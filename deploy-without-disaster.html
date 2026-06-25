@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تنقل مشروعك من بيئة التطوير المحلية إلى الإنتاج دون أن ينفجر في وجهك - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تنقل مشروعك من بيئة التطوير المحلية إلى الإنتاج دون أن ينفجر في وجهك</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/deploy-disaster.jpg" alt="نشر المشاريع للإنتاج" class="cover-image">
+
+                <p>كل مطوّر لديه قصة نشر كارثية. السيرفر لا يستجيب، قاعدة البيانات لا تتصل، الصور مختفية، والأسوأ: العميل يتصل غاضباً. النشر إلى الإنتاج (Deployment) هو اللحظة التي تتحول فيها شهور من العمل إلى منتج حي. سأشاركك طريقي الآمن لنقل مشاريع Laravel وNode.js إلى الإنتاج باستخدام Laravel Forge وVPS، مع تفادي الأخطاء الشائعة.</p>
+
+                <h2>1. القاعدة الذهبية: لا تنشر مباشرة من جهازك!</h2>
+                <p>أكبر خطأ: ترفع الملفات عبر FTP من مجلد المشروع المحلي. هذا يؤدي إلى:</p>
+                <ul>
+                    <li>نسيان ملفات (مثل .env أو مجلدات مخفية).</li>
+                    <li>رفع ملفات غير ضرورية (node_modules، .git، ملفات اختبار).</li>
+                    <li>عدم وجود أثر للنسخة المنشورة (لا تعرف أي نسخة تعمل على السيرفر).</li>
+                </ul>
+                <p>الحل: استخدم Git. كل نشر يجب أن يكون من مستودع Git (GitHub, GitLab).</p>
+
+                <h2>2. خطوات النشر الآمن لمشروع Laravel</h2>
+                <ol>
+                    <li><strong>جهّز السيرفر:</strong> استخدم Laravel Forge (أو aaPanel المجاني) لتجهيز السيرفر تلقائياً: Nginx, PHP 8.2, MySQL 8, Redis, Composer, Node.js.</li>
+                    <li><strong>اربط المستودع:</strong> في Forge، اربط موقعك بمستودع GitHub. كل Push يبني المشروع تلقائياً.</li>
+                    <li><strong>إعدادات .env:</strong> لا ترفع .env الحقيقي إلى Git. في السيرفر، أنشئ .env بالإعدادات الفعلية (اتصال قاعدة البيانات، مفاتيح البوابات).</li>
+                    <li><strong>تشغيل الأوامر الأساسية:</strong></li>
+                </ol>
+                <div class="code-block"><pre><code>git pull origin main
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm install && npm run build</code></pre></div>
+                <ol start="5">
+                    <li><strong>تأكد من الصلاحيات:</strong> مجلد storage/ و bootstrap/cache/ يجب أن يكونا قابلين للكتابة.</li>
+                    <li><strong>أعد تشغيل Queue Workers:</strong> بعد كل نشر، أعد تشغيل العاملين: <code>php artisan queue:restart</code>.</li>
+                </ol>
+
+                <h2>3. خطوات النشر الآمن لمشروع Node.js</h2>
+                <ol>
+                    <li><strong>PM2:</strong> أداة لإدارة عملية Node.js. بعد رفع المشروع، شغّله بـ: <code>pm2 start app.js --name "my-api"</code></li>
+                    <li><strong>Nginx Reverse Proxy:</strong> وجّه النطاق إلى تطبيق Node.js الذي يعمل على منفذ 3000.</li>
+                    <li><strong>متغيرات البيئة:</strong> استخدم ملف .env وحمّله في بداية التطبيق: <code>require('dotenv').config();</code></li>
+                </ol>
+
+                <h2>4. قائمة تدقيق ما قبل النشر (Pre-Deployment Checklist)</h2>
+                <ul>
+                    <li><strong>هل APP_DEBUG=false؟</strong> لا تترك debug في الإنتاج، سيكشف معلومات حساسة.</li>
+                    <li><strong>هل APP_ENV=production؟</strong> هذا يغير سلوك Laravel (تكييش، تقارير أخطاء).</li>
+                    <li><strong>هل قواعد البيانات محدثة؟</strong> شغّل migrations وتأكد من عدم وجود pending migrations.</li>
+                    <li><strong>هل الـ Storage مرتبط؟</strong> إذا كنت تستخدم S3 أو Spaces، تأكد من المفاتيح.</li>
+                    <li><strong>هل اختبرت على Staging؟</strong> استخدم بيئة staging (نسخة مطابقة للإنتاج) واختبر كل شيء قبل النشر النهائي.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>خطأ كلفني ساعات:</strong> في أحد المشاريع، نسيت تشغيل <code>php artisan storage:link</code> بعد النشر، فاختفت كل صور المنتجات من الموقع. العميل اتصل مذعوراً. الحل كان سطر أوامر واحداً، لكن الدرس بقي: اختبر كل شيء بعد النشر مباشرة.</p>
+                </div>
+
+                <h2>5. ماذا تفعل إذا انفجر الموقع بعد النشر؟</h2>
+                <ol>
+                    <li><strong>لا داعي للذعر.</strong> أول شيء: تحقق من logs (<code>storage/logs/laravel.log</code> أو <code>pm2 logs</code>).</li>
+                    <li><strong>تراجع فوراً:</strong> استخدم Git للعودة إلى آخر نسخة عاملة: <code>git revert HEAD~1</code> ثم نشر.</li>
+                    <li><strong>حافظ على هدوئك مع العميل:</strong> قل له "نعمل على تحسين طارئ، الموقع سيعود خلال دقائق." ولا تختفي.</li>
+                </ol>
+
+                <h2>خلاصة</h2>
+                <p>النشر إلى الإنتاج ليس مخيفاً إذا اتبعت عملية واضحة. استخدم Git، جهّز السيرفر بأداة مثل Forge أو aaPanel، استخدم بيئة staging، واحتفظ بقائمة تدقيق. والأهم: بعد كل نشر، افتح الموقع بنفسك وتأكد من أن كل شيء يعمل.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحسين محركات البحث والظهور (SEO/ASO) - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="section-page.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main>
+        <div class="section-page-header">
+            <h1>تحسين محركات البحث والظهور (SEO/ASO)</h1>
+            <div class="breadcrumb">
+                <a href="index.html">الرئيسية</a> &raquo; 
+                <a href="index.html">Software Developer</a> &raquo; 
+                SEO/ASO
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="openTab(event, 'articles-tab')">📝 المقالات</button>
+            </div>
+
+            <div id="articles-tab" class="tab-pane active">
+                <div class="articles-grid">
+                    <div class="article-card">
+                        <div class="card-icon"><i class="fas fa-search"></i></div>
+                        <h3>خارطة طريق SEO تقني للمبرمجين: كيف تصدر موقعك دون خبرة تسويقية سابقة.</h3>
+                        <p>تعلم أساسيات SEO التقني التي يحتاجها كل مبرمج ليظهر موقعه في الصفحات الأولى.</p>
+                        <a href="seo-roadmap.html" class="btn-read">اقرأ المقال <i class="fas fa-arrow-left"></i></a>
+                    </div>
+                    <div class="article-card">
+                        <div class="card-icon"><i class="fas fa-code"></i></div>
+                        <h3>5 تعديلات في كود الموقع رفعت لي ترتيب الكلمات المفتاحية 30% في أسبوعين.</h3>
+                        <p>تغييرات بسيطة في الـ HTML والبنية التقنية قفزت بترتيب موقعي بشكل ملحوظ.</p>
+                        <a href="seo-code-tweaks.html" class="btn-read">اقرأ المقال <i class="fas fa-arrow-left"></i></a>
+                    </div>
+                    <div class="article-card">
+                        <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <h3>لماذا تطبيقك غير موجود في متجر التطبيقات؟ أسرار ASO للمطورين.</h3>
+                        <p>كيف تجعل تطبيقك يظهر لملايين المستخدمين عبر تحسين ASO بالمتاجر.</p>
+                        <a href="aso-app-store-secrets.html" class="btn-read">اقرأ المقال <i class="fas fa-arrow-left"></i></a>
+                    </div>
+                    <div class="article-card">
+                        <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        <h3>كيف تجعل موقعك صديقاً لـ Core Web Vitals وتجتاز تحديثات غوغل الجديدة.</h3>
+                        <p>دليل عملي لتحسين سرعة الموقع وتجربة المستخدم بما يتوافق مع معايير غوغل.</p>
+                        <a href="core-web-vitals-guide.html" class="btn-read">اقرأ المقال <i class="fas fa-arrow-left"></i></a>
+                    </div>
+                    <div class="article-card">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>دليل ربط Google Search Console بموقعك البرمجي واستخراج الكنوز المخفية.</h3>
+                        <p>استغل بيانات Search Console لتعرف كيف يجدك الزوار وتحسن استراتيجيتك.</p>
+                        <a href="search-console-guide.html" class="btn-read">اقرأ المقال <i class="fas fa-arrow-left"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-home">
+            <a href="index.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى الصفحة الرئيسية</a>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+    <script src="loadComponents.js"></script>
+    <script>
+        function openTab(evt, tabName) {
+            const tabPanes = document.getElementsByClassName("tab-pane");
+            for (let i = 0; i < tabPanes.length; i++) {
+                tabPanes[i].classList.remove("active");
+            }
+            const tabBtns = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
+```

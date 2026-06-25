@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بناء واجهة إدارة متجر كاملة (Dashboard) بدلاً من الاعتماد على إضافات جاهزة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">بناء واجهة إدارة متجر كاملة (Dashboard) بدلاً من الاعتماد على إضافات جاهزة</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/custom-dashboard.jpg" alt="بناء لوحة تحكم مخصصة" class="cover-image">
+
+                <p>لوحة التحكم هي مركز قيادة المتجر. لكن الإضافات الجاهزة (مثل WooCommerce Admin أو إضافات سلة) غالباً ما تكون إما محدودة أو مثقلة بميزات لا تحتاجها. في هذا المقال، سأشرح متى تحتاج لبناء لوحة تحكم مخصصة، وكيف تبنيها بسرعة مع Laravel + Blade أو Vue، مع أمثلة من واقع المتاجر السعودية.</p>
+
+                <h2>1. متى تبني Dashboard مخصصة؟</h2>
+                <p>ليس كل متجر يحتاج لوحة تحكم مخصصة. اسأل نفسك:</p>
+                <ul>
+                    <li>هل تحتاج تقارير محددة غير متوفرة في الإضافات الجاهزة؟ (مثلاً: تقرير مبيعات كل مندوب على حدة، تقرير ضريبة القيمة المضافة، ...).</li>
+                    <li>هل تريد دمج بيانات من مصادر متعددة في شاشة واحدة؟ (مثلاً: طلبات سلة + طلبات واتساب + طلبات الهاتف).</li>
+                    <li>هل تحتاج صلاحيات دقيقة جداً لا توفرها الإضافات؟</li>
+                    <li>هل الإضافة الجاهزة تبطئ موقعك؟</li>
+                </ul>
+                <p>إذا أجبت بنعم على أي من هذه، فأنت تحتاج Dashboard مخصصة.</p>
+
+                <h2>2. التقنية المناسبة</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>الطريقة</th><th>المميزات</th><th>السيئات</th></tr></thead>
+                    <tbody>
+                        <tr><td>Laravel + Blade</td><td>سريع، بسيط، لا تحتاج API منفصل</td><td>أقل تفاعلية، إعادة تحميل للصفحة</td></tr>
+                        <tr><td>Laravel API + Vue/React</td><td>تفاعلية عالية، SPA سريعة</td><td>يحتاج API منفصل، وقت أطول للتطوير</td></tr>
+                        <tr><td>Laravel + Livewire</td><td>تفاعلية بدون كتابة JavaScript كثير</td><td>أداء أقل في الصفحات المعقدة جداً</td></tr>
+                    </tbody>
+                </table>
+                <p>نصيحتي: ابدأ بـ Blade + Livewire لمعظم المشاريع. إذا كبر المشروع، انقل تدريجياً إلى Vue/React مع API.</p>
+
+                <h2>3. هيكل الـ Dashboard</h2>
+                <p>لوحة التحكم المخصصة عادة تحتوي على:</p>
+                <ul>
+                    <li><strong>Layout ثابت:</strong> Sidebar للتنقل، Header مع اسم المستخدم وإشعارات.</li>
+                    <li><strong>شاشات:</strong> Dashboard رئيسية (إحصائيات)، إدارة المنتجات، الطلبات، العملاء، التقارير.</li>
+                    <li><strong>Widgets:</strong> بطاقات أرقام (مبيعات اليوم، طلبات معلقة، منتجات منخفضة المخزون).</li>
+                </ul>
+
+                <h2>4. مثال: بناء Widget المبيعات السريعة في Laravel Blade</h2>
+                <div class="code-block"><pre><code>// app/Http/Controllers/DashboardController.php
+public function index() {
+    return view('dashboard.index', [
+        'todaySales' => Order::whereDate('created_at', today())->sum('total'),
+        'pendingOrders' => Order::where('status', 'pending')->count(),
+        'lowStockProducts' => Product::where('stock', '<', 5)->count(),
+        'monthlyRevenue' => Order::whereMonth('created_at', now()->month)->sum('total'),
+    ]);
+}</code></pre></div>
+                <p>في الواجهة (Blade):</p>
+                <div class="code-block"><pre><code>&lt;!-- resources/views/dashboard/index.blade.php --&gt;
+&lt;div class="grid grid-cols-4 gap-4"&gt;
+    &lt;x-stat-card title="مبيعات اليوم" :value="$todaySales" icon="ri-money-dollar-circle-line" color="green" /&gt;
+    &lt;x-stat-card title="طلبات معلقة" :value="$pendingOrders" icon="ri-time-line" color="orange" /&gt;
+    &lt;x-stat-card title="منتجات منخفضة المخزون" :value="$lowStockProducts" icon="ri-alert-line" color="red" /&gt;
+    &lt;x-stat-card title="إيرادات الشهر" :value="$monthlyRevenue" icon="ri-line-chart-line" color="blue" /&gt;
+&lt;/div&gt;</code></pre></div>
+
+                <h2>5. مثال من السوق – لوحة تحكم لمتجر سلة</h2>
+                <p>في أحد مشاريعي، كان صاحب متجر سلة يشتكي من أن تقارير سلة لا تظهر له "أداء كل مندوب توصيل" و"المنتجات الأكثر إرجاعاً". بنينا Dashboard مخصصة تستدعي بيانات سلة عبر API الخاص بهم، وتضيف هذين التقريرين. النتيجة: وفرنا على صاحب المتجر 3 ساعات أسبوعياً كان يقضيها في تجميع هذه البيانات يدوياً من Excel.</p>
+
+                <h2>6. نصائح سريعة</h2>
+                <ul>
+                    <li><strong>لا تبالغ في البناء:</strong> ابدأ بأهم 3 شاشات فقط. أضف المزيد بناءً على احتياج العميل.</li>
+                    <li><strong>استخدم Charts:</strong> Chart.js أو ApexCharts لرسم المبيعات الشهرية، توزيع الطلبات حسب المناطق، إلخ.</li>
+                    <li><strong>اجعلها Responsive:</strong> صاحب المتجر سيفتح اللوحة من جواله كثيراً.</li>
+                    <li><strong>أضف Export:</strong> أي جدول يجب أن يكون له زر "تصدير Excel".</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>لوحة التحكم المخصصة تستحق وقتك إذا كانت الإضافات الجاهزة لا تلبي احتياجات العميل. ابدأ صغيراً، استخدم Blade + Livewire، وأضف الميزات تدريجياً. العميل سيرى قيمة عملك فوراً عندما يجد التقرير الذي يحتاجه في ثانية واحدة بدلاً من ساعة.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

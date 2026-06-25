@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أخطاء شائعة في تصميم قواعد البيانات قد تدمر أداء تطبيقك بالكامل - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">أخطاء شائعة في تصميم قواعد البيانات قد تدمر أداء تطبيقك بالكامل</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/database-mistakes.jpg" alt="أخطاء قواعد البيانات" class="cover-image">
+
+                <p>بعد سنوات من تطوير تطبيقات لمتاجر إلكترونية ومنصات في السوق الخليجي، لمست كيف يمكن لتصميم قاعدة البيانات أن يبني مشروعاً أو يهدمه تماماً. سأشرح هنا أخطاء قاتلة مع حلولها وأمثلة كودية، من منظور من يبني أنظمة تخدم آلاف المستخدمين.</p>
+
+                <h2>الخطأ 1: غياب الفهارس أو سوء استخدامها</h2>
+                <p><strong>المشكلة:</strong> بطء استعلامات البحث والفلترة.</p>
+                <p>مثال: جدول orders فيه مليون صف، تبحث بـ WHERE status = 'pending' بدون فهرس، قاعدة البيانات تفحص الجدول كاملاً (Full Table Scan).</p>
+                <p><strong>الحل:</strong></p>
+                <ul>
+                    <li>أضف فهرساً بسيطاً على status.</li>
+                    <li>أضف فهرساً مركباً على (status, created_at) إذا كنت تبحث بحالة وتفّلتر بالتاريخ معاً.</li>
+                    <li>استخدم EXPLAIN في MySQL لترى خطة التنفيذ وتتأكد أن الفهرس مستخدم.</li>
+                    <li>لا تفرط في الفهارس: كل فهرس إضافي يبطئ INSERT وUPDATE وDELETE.</li>
+                </ul>
+
+                <h2>الخطأ 2: مشكلة N+1 Query</h2>
+                <p><strong>المشكلة:</strong> تنفيذ استعلام داخل حلقة.</p>
+                <p>كود خاطئ (PHP):</p>
+                <div class="code-block"><pre><code>$products = Product::all();
+foreach ($products as $product) {
+    echo $product->images()->first()->url; // استعلام جديد لكل منتج!
+}</code></pre></div>
+                <p>إذا كان لديك 100 منتج، ينفذ 101 استعلام.</p>
+                <p><strong>الحل:</strong></p>
+                <div class="code-block"><pre><code>$products = Product::with('images')->get(); // استعلامان فقط
+foreach ($products as $product) {
+    echo $product->images->first()->url;
+}</code></pre></div>
+                <p>في Node.js (Sequelize):</p>
+                <div class="code-block"><pre><code>const products = await Product.findAll({ include: [Image] }); // eager loading</code></pre></div>
+
+                <h2>الخطأ 3: تخزين البيانات القابلة للحساب بدلاً من حسابها (أو العكس)</h2>
+                <p>القاعدة الذهبية: خزّن ما يُستعلم عنه كثيراً، واحسب ما هو لحظي وقابل للتغير.</p>
+                <ul>
+                    <li>خزّن total_price في جدول الطلبات لأنه سيُقرأ آلاف المرات مع التقارير.</li>
+                    <li>لا تخزّن age (العمر)، بل خزّن birth_date واحسبه، لأن العمر يتغير كل سنة.</li>
+                </ul>
+
+                <h2>الخطأ 4: تجاهل أنواع البيانات المناسبة</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>نوع البيانات الخاطئ</th><th>الصحيح</th><th>لماذا</th></tr></thead>
+                    <tbody>
+                        <tr><td>VARCHAR للتاريخ</td><td>TIMESTAMP أو DATE</td><td>مقارنات أسرع، دوال جاهزة، فهرسة أفضل</td></tr>
+                        <tr><td>TEXT لحقول قصيرة</td><td>VARCHAR(255)</td><td>أداء فهرسة أفضل، مساحة أقل</td></tr>
+                        <tr><td>INT كبير لعدد صغير</td><td>SMALLINT أو TINYINT</td><td>وفر مساحة وسرّع الفهارس</td></tr>
+                        <tr><td>FLOAT للأسعار</td><td>DECIMAL(10,2)</td><td>دقة في الحسابات المالية</td></tr>
+                        <tr><td>تخزين صورة كـ BLOB</td><td>مسار فقط (VARCHAR)</td><td>قاعدة البيانات ليست مخزن ملفات</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>الخطأ 5: التطبيع المفرط (Over-Normalization)</h2>
+                <p><strong>المشكلة:</strong> جدول للعناوين، جدول للمدن، جدول للأحياء، وجدول للشوارع. أي استعلام لجلب مستخدم مع عنوانه يحتاج 4 JOINs.</p>
+                <p><strong>الحل:</strong> تطبيع معتدل.</p>
+                <ul>
+                    <li>اجعل city وdistrict مجرد أعمدة في جدول addresses إذا لم تكن تحتاج لإدارة معجمية متقدمة.</li>
+                    <li>في بعض الحالات، استخدم Denormalization مقصوداً لتحسين القراءة: خزّن اسم المدينة مع الطلب لتحسين التقارير بدلاً من JOIN كل مرة.</li>
+                </ul>
+
+                <h2>الخطأ 6: عدم استخدام القيود (Constraints)</h2>
+                <ul>
+                    <li>غياب المفاتيح الخارجية (Foreign Keys): يؤدي لبيانات يتيمة (منتج محذوف لكنه موجود في طلب قديم). استخدم ON DELETE SET NULL أو ON DELETE RESTRICT.</li>
+                    <li>غياب UNIQUE: يؤدي لتكرار بيانات لا ينبغي أن تتكرر (بريد إلكتروني، SKU منتج).</li>
+                </ul>
+
+                <h2>الخطأ 7: عدم التخطيط للبيانات المتعددة اللغات</h2>
+                <p>في السوق الخليجي، كثير من المتاجر تحتاج عربي وإنجليزي.</p>
+                <p>الحل الأمثل (بدلاً من أعمدة name_ar, name_en):</p>
+                <p>جدول products + جدول product_translations:</p>
+                <div class="code-block"><pre><code>products: id, sku, price, category_id, ...
+product_translations: id, product_id, locale ('ar','en'), name, description</code></pre></div>
+                <p>ميزة: سهولة إضافة لغات مستقبلاً دون تغيير الهيكل، لكنه يزيد تعقيد الاستعلامات (Eager Loading ضروري).</p>
+
+                <h2>أداة تحليل الأداء</h2>
+                <ul>
+                    <li>MySQL: EXPLAIN SELECT ...، SHOW PROCESSLIST، slow_query_log.</li>
+                    <li>PostgreSQL: EXPLAIN ANALYZE.</li>
+                    <li>Laravel Telescope / Laravel Debugbar ترى عدد الاستعلامات ووقتها مباشرة في المتصفح.</li>
+                </ul>
+
+                <h2>مثال واقعي موسع من سوق الخليج</h2>
+                <p><strong>متجر إلكترونيات على زد، 5000 منتج، 2000 طلب شهرياً.</strong></p>
+                <p>الأعراض:</p>
+                <ul>
+                    <li>لوحة التحكم تحتاج 15 ثانية لتحميل قائمة الطلبات اليومية.</li>
+                    <li>البحث عن منتج يستغرق 6 ثوانٍ.</li>
+                </ul>
+                <p>التشخيص:</p>
+                <ol>
+                    <li>N+1 في لوحة الطلبات: لكل طلب، كود يستعلم عن العميل، ثم عن المدينة، ثم عن حالة الشحن... = 13 استعلام لكل طلب، يعني 26000 استعلام للوحة!</li>
+                    <li>لا فهارس على product_name ولا sku.</li>
+                    <li>جدول الطلبات يحوي 4 JOINs غير ضرورية لجلب اسم المدينة في التقرير.</li>
+                </ol>
+                <p>العلاج:</p>
+                <ol>
+                    <li>استخدمنا Eager Loading: Order::with('customer', 'city', 'status')->paginate(50).</li>
+                    <li>أضفنا فهارس مركبة على الأعمدة المستخدمة في البحث.</li>
+                    <li>أضفنا عمود city_name في جدول الطلبات (Denormalization) وملأناه عند إنشاء الطلب مرة واحدة، فاستغنينا عن JOIN التقارير.</li>
+                </ol>
+                <p>النتيجة:</p>
+                <ul>
+                    <li>لوحة الطلبات: من 15 ثانية إلى 0.4 ثانية.</li>
+                    <li>البحث عن منتج: من 6 ثوانٍ إلى 0.1 ثانية.</li>
+                </ul>
+
+                <h2>نصائح إضافية</h2>
+                <ul>
+                    <li>صمم ERD (مخطط الكيانات والعلاقات) على ورقة قبل كتابة Migration واحدة.</li>
+                    <li>فكر في أحجام البيانات مستقبلاً: جدول logs قد يصل لملايين الصفوف، هل تحتاجه في نفس قاعدة البيانات؟ استخدم قاعدة منفصلة أو أرشفة.</li>
+                    <li>استخدم uuid بدلاً من auto-increment للمفاتيح الأساسية إذا كنت تتوقع توزيع النظام أو العمل مع ميكروسيرفيسز، لكن انتبه لأداء الفهارس.</li>
+                    <li>نسخ احتياطية دورية: أتمتة نسخ يومي لقاعدة البيانات خارج السيرفر.</li>
+                </ul>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

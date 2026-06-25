@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ربط المتجر بالتيكتوك وسناب شات كتالوج: حلول لمشاكل المنتجات المرفوضة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">ربط المتجر بالتيكتوك وسناب شات كتالوج: حلول لمشاكل "المنتجات مرفوضة"</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Technical Marketing</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>تيكتوك وسناب شات لم يعودا مجرد تطبيقات ترفيه، بل أصبحا قنوات بيع قوية. لكن ربط كتالوج منتجات متجرك بهما قد يكون كابوساً تقنياً: منتجات مرفوضة، بيانات غير متزامنة، وأخطاء غامضة. بعد معالجة عشرات حالات الرفض لمتاجر سلة وزِد وشوبفاي، سأشاركك الأسباب الحقيقية لرفض المنتجات وحلولها التقنية.</p>
+
+                <h2>1. كيف يعمل كتالوج تيكتوك وسناب شات؟</h2>
+                <p>المنصتان تقدمان ميزة "كتالوج المنتجات" أو Product Catalog، وهي عبارة عن تغذية بيانات (Data Feed) بتنسيق XML أو CSV أو عبر API مباشر. المنصة تقرأ هذا الملف يومياً، وتحدث قائمة منتجاتك في متجرك داخل التطبيق. أي خطأ في هذا الملف يؤدي إلى رفض المنتج.</p>
+
+                <h2>2. أشهر أسباب رفض المنتجات وحلولها</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>المشكلة</th><th>السبب</th><th>الحل</th></tr></thead>
+                    <tbody>
+                        <tr><td>صورة المنتج مرفوضة</td><td>خلفية غير بيضاء، شعار مائي، نص على الصورة</td><td>استخدم صوراً بخلفية بيضاء نقية، بدون نصوص أو شعارات على الصورة الرئيسية</td></tr>
+                        <tr><td>وصف المنتج غير متوافق</td><td>يحتوي على HTML، رموز خاصة، أو أقل من الحد الأدنى</td><td>نظف الوصف من HTML tags، وتأكد أن طوله بين 50 و 5000 حرف</td></tr>
+                        <tr><td>السعر غير متطابق</td><td>السعر في الـ Feed يختلف عن السعر على موقعك</td><td>تأكد من تحديث الـ Feed يومياً ومطابقته لموقعك</td></tr>
+                        <tr><td>معرّف المنتج (SKU/GTIN) مفقود</td><td>المنصة تتطلب GTIN أو MPN أو SKU</td><td>أضف حقل SKU لكل منتج، واستخدم GTIN حقيقياً إن توفر</td></tr>
+                        <tr><td>التصنيف غير مطابق</td><td>فئة المنتج لا تتطابق مع تصنيف المنصة</td><td>طابق تصنيفات متجرك مع Google Product Categories</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>3. إنشاء Feed متوافق لسلة وشوبفاي</h2>
+                <p><strong>لمستخدمي سلة:</strong> سلة تولد Feed تلقائياً يمكنك استخدامه. تأكد من أن المنتجات تحتوي على: اسم المنتج، وصف، سعر، SKU، صورة رئيسية بخلفية بيضاء، ورابط المنتج.</p>
+                <p><strong>لمستخدمي شوبفاي:</strong> استخدم Shopify's Facebook & Instagram channel الذي يولد Feed متوافقاً مع تيكتوك أيضاً. لكن راجع feed بنفسك: اذهب إلى Products > Export، وتأكد من الأعمدة المطلوبة.</p>
+                <p><strong>للمتاجر المخصصة (Laravel/Node.js):</strong> ابنِ API endpoint يولد XML Feed تلقائياً:</p>
+                <div class="code-block"><pre><code>// Laravel: routes/web.php
+Route::get('/tiktok-feed.xml', function() {
+    $products = Product::with('images')->where('status', 'active')->get();
+    
+    $xml = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><rss xmlns:g="http://base.google.com/ns/1.0" version="2.0"><channel/></rss>');
+    
+    foreach ($products as $product) {
+        $item = $xml->channel->addChild('item');
+        $item->addChild('g:id', $product->sku);
+        $item->addChild('g:title', htmlspecialchars($product->name));
+        $item->addChild('g:description', htmlspecialchars(strip_tags($product->description)));
+        $item->addChild('g:link', route('products.show', $product));
+        $item->addChild('g:image_link', asset('storage/' . $product->images->first()->path));
+        $item->addChild('g:price', number_format($product->price, 2) . ' SAR');
+        $item->addChild('g:availability', $product->stock > 0 ? 'in_stock' : 'out_of_stock');
+        if ($product->brand) {
+            $item->addChild('g:brand', htmlspecialchars($product->brand));
+        }
+        $item->addChild('g:condition', 'new');
+    }
+    
+    return response($xml->asXML(), 200)->header('Content-Type', 'application/xml');
+});</code></pre></div>
+
+                <h2>4. أتمتة تحديث الـ Feed</h2>
+                <p>الـ Feed يجب أن يتحدث يومياً. ضع cron job ينشئ الملف كل صباح:</p>
+                <div class="code-block"><pre><code>0 3 * * * php /path/to/artisan feed:generate-tiktok</code></pre></div>
+                <p>ثم تأكد من أن الرابط الذي أعطيته لتيكتوك (مثل <code>https://yoursite.com/tiktok-feed.xml</code>) يعمل ويعرض البيانات الصحيحة.</p>
+
+                <h2>5. فحص الـ Feed قبل الإرسال</h2>
+                <p>قبل إرسال الـ Feed للمنصة، افحصه باستخدام:</p>
+                <ul>
+                    <li><strong>TikTok Ads Manager > Assets > Catalogs:</strong> حمّل الـ Feed يدوياً وشاهد تقرير الأخطاء.</li>
+                    <li><strong>Google Merchant Center:</strong> حتى لو كنت تستهدف تيكتوك، ارفع الـ Feed لـ Google Merchant Center مؤقتاً لتحصل على تقرير أخطاء مفصل ومجاني.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>خطأ شائع:</strong> كثير من المتاجر تنسى تحديث شهادة SSL، فيفشل تيكتوك في جلب الصور لأنها على HTTP. تأكد أن كل روابط الصور تبدأ بـ <code>https://</code>.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>ربط كتالوج منتجاتك بتيكتوك وسناب شات ليس سحراً، بل هو عملية تقنية منظمة: صور نظيفة، بيانات كاملة، Feed محدث يومياً، وفحص دوري للأخطاء. عالج هذه النقاط الأربع، وستلاحظ الفرق في أداء إعلاناتك.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="technical-marketing.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Technical Marketing</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حل المشكلة الأبدية: تحويل PDF لـ Word والعكس بدون ما يخرب التنسيق - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">حل المشكلة الأبدية: تحويل PDF لـ Word والعكس بدون ما يخرب التنسيق</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Office Tools</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>كم مرة حوّلت PDF إلى Word، فتحت الملف، فوجدت النص متناثراً، الجداول محطمة، والصور في أماكن عشوائية؟ هذه المشكلة عمرها 20 سنة، لكن لها حلولاً نهائية إذا عرفت الطرق الصحيحة. سأشاركك أفضل الطرق لتحويل PDF إلى Word والعكس، من المجاني إلى الاحترافي، مع الحفاظ على التنسيق.</p>
+
+                <h2>1. لماذا يخرب التنسيق عند التحويل؟</h2>
+                <p>السبب الجذري: PDF صُمم ليكون "صفحة مطبوعة" ثابتة، بينما Word صُمم ليكون "مستنداً قابلاً للتحرير". PDF لا يعرف ما هو "جدول" أو "فقرة"، بل يخزن فقط "نص في موقع X,Y". عند التحويل، يحاول المحول تخمين الهيكل، وغالباً يفشل. فهم هذا هو مفتاح اختيار الأداة المناسبة.</p>
+
+                <h2>2. أفضل الأدوات للتحويل (مرتبة من الأفضل)</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>الأداة</th><th>PDF → Word</th><th>Word → PDF</th><th>السعر</th><th>أفضل لـ</th></tr></thead>
+                    <tbody>
+                        <tr><td>Microsoft Word نفسه</td><td>جيد للنصوص البسيطة</td><td>ممتاز</td><td>مدفوع (مع Office 365)</td><td>تحويل سريع، نصوص عربية بسيطة</td></tr>
+                        <tr><td>Adobe Acrobat Pro</td><td>الأفضل على الإطلاق</td><td>ممتاز</td><td>غالي (≈ 75 ر.س شهرياً)</td><td>مستندات معقدة، جداول، نماذج</td></tr>
+                        <tr><td>Smallpdf (أونلاين)</td><td>جيد جداً</td><td>جيد</td><td>مجاني (محدود) / مدفوع</td><td>تحويلات سريعة بدون تثبيت</td></tr>
+                        <tr><td>ILovePDF (أونلاين)</td><td>جيد</td><td>جيد</td><td>مجاني (محدود) / مدفوع</td><td>مستندات بسيطة إلى متوسطة</td></tr>
+                        <tr><td>Google Docs</td><td>مقبول</td><td>جيد (تصدير PDF)</td><td>مجاني</td><td>نصوص فقط، بدون تنسيق معقد</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>3. الطريقة الاحترافية: Microsoft Word مباشرة</h2>
+                <p>قلة يعرفون أن Word نفسه يحول PDF:</p>
+                <ol>
+                    <li>افتح Word.</li>
+                    <li>File > Open > اختر ملف PDF.</li>
+                    <li>Word سيحوله تلقائياً إلى مستند قابل للتحرير.</li>
+                    <li>ستظهر رسالة: "Word will convert this PDF to an editable Word document". اضغط OK.</li>
+                    <li>راجع المستند ونظف أي تشوهات بسيطة.</li>
+                </ol>
+                <p><strong>متى تنجح هذه الطريقة:</strong> عندما يكون PDF أصلاً مخلوقاً من Word أو يحتوي على نصوص بسيطة. مع الجداول المعقدة والصور الكثيرة، قد لا تكون النتيجة مثالية.</p>
+
+                <h2>4. الطريقة البرمجية – بايثون لتحويل PDF إلى Word</h2>
+                <p>إذا كنت تريد أتمتة التحويل لعدد كبير من الملفات، فاستخدم بايثون:</p>
+                <div class="code-block"><pre><code>from pdf2docx import Converter
+
+# تحويل PDF إلى Word
+pdf_file = 'report.pdf'
+docx_file = 'report.docx'
+
+cv = Converter(pdf_file)
+cv.convert(docx_file, start=0, end=None)  # كل الصفحات
+cv.close()
+print(f'تم التحويل: {docx_file}')</code></pre></div>
+                <p>لتحويل Word إلى PDF، استخدم docx2pdf:</p>
+                <div class="code-block"><pre><code>from docx2pdf import convert
+
+convert('report.docx', 'report.pdf')</code></pre></div>
+
+                <h2>5. التعامل مع العربية – مشكلة إضافية</h2>
+                <p>التحويل من وإلى العربية يضيف طبقة تعقيد: الحروف متصلة، والاتجاه من اليمين لليسار. نصائح:</p>
+                <ul>
+                    <li><strong>Adobe Acrobat Pro:</strong> الأفضل للعربية. يتعرف على النص العربي بشكل ممتاز.</li>
+                    <li><strong>Smallpdf:</strong> جيد جداً مع العربية.</li>
+                    <li><strong>Google Docs:</strong> أحياناً يعكس النص العربي أو يجعله منفصلاً.</li>
+                    <li>إذا فشلت كل الأدوات: استخدم OCR (التعرف البصري) على PDF الممسوح ضوئياً، ثم راجع النص يدوياً.</li>
+                </ul>
+
+                <h2>6. عندما لا يكون التحويل ضرورياً</h2>
+                <p>أحياناً الحل الأفضل هو عدم التحويل. اسأل نفسك: هل أحتاج حقاً لتعديل الملف؟ أم أريد فقط قراءته أو تعبئته؟</p>
+                <ul>
+                    <li><strong>للقراءة فقط:</strong> استخدم قارئ PDF، لا تحوله.</li>
+                    <li><strong>لتعبئة نموذج:</strong> استخدم Adobe Acrobat Reader (مجاني) لملء النماذج مباشرة في PDF.</li>
+                    <li><strong>للتوقيع:</strong> Adobe Acrobat Reader أو Smallpdf.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-lightbulb"></i> <strong>نصيحة ذهبية:</strong> إذا كنت تنشئ مستنداً ستحتاج لتحويله لاحقاً، فابدأ بـ Word ثم صدره كـ PDF. هذا المسار (Word → PDF) دائماً أنظف وأسرع من العكس (PDF → Word). Word هو "المصدر"، و PDF هو "الناتج النهائي".</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>تحويل PDF إلى Word ليس مستحيلاً، لكنه يحتاج الأداة المناسبة حسب تعقيد المستند. للنصوص البسيطة: Word نفسه. للمستندات المعقدة والعربية: Adobe Acrobat Pro. للأتمتة: بايثون. وللتحويلات السريعة أونلاين: Smallpdf. القاعدة الذهبية: ابدأ بـ Word، وانتهِ بـ PDF، وليس العكس.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="office-tools.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Office Tools</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

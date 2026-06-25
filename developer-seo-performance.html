@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحسين أداء الموقع وبناءه ليتصدر محركات البحث: رؤية المطور وليس المسوق فقط - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">تحسين أداء الموقع وبناءه ليتصدر محركات البحث: رؤية المطور وليس المسوق فقط</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/developer-seo.jpg" alt="تحسين أداء المواقع والسEO" class="cover-image">
+
+                <p>كثير من المطورين يظنون أن تحسين محركات البحث (SEO) مهمة المسوّق فقط. الحقيقة أن المطور هو الذي يضع الأساس التقني الذي إما أن يطلق موقعك للصفحات الأولى أو يدفنه في الصفحة العاشرة. في هذا المقال، سأشرح لك Core Web Vitals، تحسين صور منتجات متجر سلة، تعطيل الإضافات غير الضرورية، وتحسين استعلامات قاعدة البيانات — كلها من منظور المطور الذي يفهم كيف يعمل غوغل فعلاً.</p>
+
+                <h2>1. لماذا يهتم غوغل بالأداء؟</h2>
+                <p>غوغل تريد أن تقدم للمستخدم أفضل تجربة. إذا كان موقعك بطيئاً أو متعطلاً على الجوال، فغوغل ببساطة لن توصي به. المؤشرات الأساسية التي تقيسها غوغل تسمى Core Web Vitals:</p>
+                <ul>
+                    <li><strong>LCP (Largest Contentful Paint):</strong> زمن تحميل أكبر عنصر مرئي. يجب أن يكون أقل من 2.5 ثانية.</li>
+                    <li><strong>FID (First Input Delay):</strong> زمن استجابة المتصفح لأول تفاعل من المستخدم. يجب أن يكون أقل من 100 مللي ثانية.</li>
+                    <li><strong>CLS (Cumulative Layout Shift):</strong> ثبات التخطيط البصري. يجب أن يكون أقل من 0.1.</li>
+                </ul>
+                <p>هذه المؤشرات تؤثر مباشرة على ترتيب موقعك في نتائج البحث. وغوغل تعلن تحديثات جديدة كل عام تركز فيها أكثر على تجربة المستخدم.</p>
+
+                <h2>2. تحسين صور منتجات متجر سلة (وحل مشكلة LCP)</h2>
+                <p>في متاجر سلة وزِد وشوبفاي، أكبر مشكلة تقنية تواجه المطور هي الصور. صور المنتجات عالية الدقة تُحمّل ببطء وتدمّر مؤشر LCP. الحل العملي:</p>
+                <ul>
+                    <li><strong>استخدم WebP أو AVIF:</strong> قلل حجم الصورة حتى 70% بدون خسارة واضحة في الجودة. في Laravel استخدم Intervention Image، وفي Node.js استخدم sharp.</li>
+                    <li><strong>تحميل كسول (Lazy Loading):</strong> أضف loading="lazy" للصور التي تظهر تحت الطيّ. هذا يحمّل الصور فقط عندما يقترب المستخدم منها.</li>
+                    <li><strong>أبعاد ثابتة:</strong> حدد width و height دائماً لمنع CLS. إذا كانت الصورة تأخذ مساحة غير محددة مسبقاً، فسيتحرك المحتوى أسفلها فجأة مما يزعج المستخدم ويخفض تقييم غوغل.</li>
+                    <li><strong>CDN:</strong> استخدام Cloudflare أو أي CDN يوزع صورك على سيرفرات قريبة من المستخدم. في السوق الخليجي، هذا يعني سيرفرات في الإمارات أو السعودية لتقليل زمن التحميل.</li>
+                </ul>
+
+                <h2>3. تعطيل الإضافات غير الضرورية (حل مشكلة FID)</h2>
+                <p>أكبر قاتل للأداء في ووردبريس أو متاجر سلة/شوبفاي هو الإضافات. كل إضافة تحمّل JavaScript وCSS إضافيين. نصيحتي:</p>
+                <ul>
+                    <li>احذف أي إضافة لا تستخدمها فعلياً. لا تتركها "للاحتياط".</li>
+                    <li>ادمج وظائف الإضافات البسيطة في كود القالب بنفسك بدلاً من استخدام 3 إضافات صغيرة.</li>
+                    <li>استخدم Asset Cleanup أو wp_deregister_script لإلغاء تحميل JS/CSS في الصفحات التي لا تحتاجها.</li>
+                    <li>في Laravel، استخدم Vite مع code splitting لتحميل JavaScript فقط عند الحاجة.</li>
+                </ul>
+
+                <h2>4. تحسين استعلامات قاعدة البيانات (القاتل الصامت)</h2>
+                <p>صفحة منتج في متجر تستدعي 20 استعلام قاعدة بيانات؟ هذه كارثة. لتسريعها:</p>
+                <ul>
+                    <li>استخدم Eager Loading كما شرحت في مقال قواعد البيانات: Product::with('images', 'category', 'variants').</li>
+                    <li>استخدم الكاش بشكل عنيف. Redis للقوائم التي تتغير نادراً (مثل قائمة الفئات). الكاش يمكن أن يحول صفحة تأخذ 2 ثانية إلى 0.1 ثانية.</li>
+                    <li>فهرسة ذكية: أي عمود يظهر في WHERE أو ORDER BY أو JOIN يجب أن يكون مفهرساً.</li>
+                    <li>استخدم Query Builder بدلاً من ORM في القوائم الثقيلة لتحكم أكبر.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-lightbulb"></i> <strong>من تجربتي:</strong> في أحد متاجر سلة، كان صاحب المتجر يشتكي من بطء الصفحة الرئيسية (8 ثوانٍ!). اكتشفت أن slider الصور يحمّل 20 صورة أصلية بدقة 4000px. بعد تحويلها لـ WebP وإضافة Lazy Loading، انخفض زمن التحميل إلى 1.8 ثانية، وارتفع ترتيب الموقع 11 مركزاً في غوغل خلال شهر.</p>
+                </div>
+
+                <h2>5. SEO تقني – أشياء يفعلها المطور خلف الكواليس</h2>
+                <ul>
+                    <li><strong>Structured Data (Schema.org):</strong> أضف JSON-LD للمنتجات، التقييمات، والأسعار. هذا يجعل موقعك يظهر بنجوم وتقييمات في نتائج البحث مما يزيد نسبة النقر.</li>
+                    <li><strong>ملف sitemap.xml و robots.txt:</strong> تأكد أنها محدثة. في Laravel استخدم spatie/laravel-sitemap لتوليدها تلقائياً.</li>
+                    <li><strong>Canonical URLs:</strong> امنع المحتوى المكرر. إذا كان المنتج يظهر في فئتين، حدد الرابط الأساسي.</li>
+                    <li><strong>HTTPS:</strong> إجباري. غوغل تفضل المواقع الآمنة.</li>
+                </ul>
+
+                <h2>6. أدوات المطور لقياس الأداء</h2>
+                <ul>
+                    <li><strong>Lighthouse:</strong> مدمج في Chrome DevTools. يعطيك تقريراً مفصلاً عن الأداء، SEO، accessibility.</li>
+                    <li><strong>PageSpeed Insights:</strong> أداة غوغل الرسمية لقياس Core Web Vitals.</li>
+                    <li><strong>GTmetrix:</strong> يعطيك waterfall للطلبات لتعرف بالضبط ما الذي يبطئ موقعك.</li>
+                    <li><strong>Google Search Console:</strong> قسم Core Web Vitals يريك الصفحات التي تحتاج تحسيناً.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>تحسين الأداء ليس رفاهية، بل هو واجب على كل مطور يريد لموقعه أن يظهر في الصفحات الأولى. ابدأ بالصور، نظف الإضافات، فهرس استعلاماتك، وراقب Core Web Vitals باستمرار. الفرق بين موقع سريع وموقع بطيء قد يكون آلاف الزوار شهرياً.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

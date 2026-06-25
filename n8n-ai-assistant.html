@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة N8N للذكاء الاصطناعي والأتمتة: كيف تبني مساعداً ذكياً لمتجرك بدون كود معقد - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">أداة N8N للذكاء الاصطناعي والأتمتة: كيف تبني مساعداً ذكياً لمتجرك بدون كود معقد</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/n8n-ai.jpg" alt="N8N والأتمتة" class="cover-image">
+
+                <p>N8N هي أداة أتمتة مفتوحة المصدر تسمح لك ببناء سير عمل (Workflows) بصرياً. قوتها الحقيقية تظهر عند دمجها مع الذكاء الاصطناعي (مثل ChatGPT API) لبناء مساعدين أذكياء لمتجرك دون الحاجة لكتابة كود معقد. في هذا المقال، سأريك كيف تبني مساعداً ذكياً لمتجرك باستخدام N8N، مع مثال عملي من تجربتي.</p>
+
+                <h2>1. لماذا N8N وليس Zapier أو Make؟</h2>
+                <ul>
+                    <li><strong>مفتوحة المصدر:</strong> يمكنك تثبيتها على سيرفرك الخاص (VPS) مجاناً وبتحكم كامل في البيانات.</li>
+                    <li><strong>مرونة عالية:</strong> N8N تدعم JavaScript مخصص داخل العقد (Nodes)، مما يمنحك قوة لا نهائية.</li>
+                    <li><strong>تكامل محلي:</strong> يمكنها الاتصال بقواعد بياناتك مباشرة (MySQL, PostgreSQL) وهو أمر غير متوفر بسهولة في البدائل السحابية.</li>
+                </ul>
+
+                <h2>2. بناء مساعد ذكي لمتجرك: ربط ChatGPT بتنبيهات الطلبات</h2>
+                <p>السيناريو: تريد أن يتلقى صاحب المتجر ملخصاً يومياً عن الطلبات الجديدة، مع تحليل للمشاعر في تعليقات العملاء، وتوصيات تلقائية.</p>
+                <p><strong>خطوات بناء الـ Workflow في N8N:</strong></p>
+                <ol>
+                    <li><strong>عقدة Cron Trigger:</strong> تعمل يومياً الساعة 8 صباحاً.</li>
+                    <li><strong>عقدة MySQL/PostgreSQL:</strong> تجلب الطلبات الجديدة خلال آخر 24 ساعة.</li>
+                    <li><strong>عقدة HTTP Request:</strong> ترسل هذه الطلبات إلى ChatGPT API مع prompt مخصص: "لخص هذه الطلبات، وحلل المشاعر في تعليقات العملاء، وقدم توصيات لتحسين المبيعات."</li>
+                    <li><strong>عقدة WhatsApp/Telegram/Email:</strong> ترسل الملخص الناتج من ChatGPT إلى صاحب المتجر.</li>
+                </ol>
+
+                <h2>3. مثال: تلخيص مراجعات العملاء يومياً</h2>
+                <p>في أحد متاجر التجميل، قمنا ببناء Workflow يجلب مراجعات المنتجات الجديدة من قاعدة البيانات، ويرسلها لـ ChatGPT مع الأمر: "صنف هذه المراجعات إلى إيجابية/سلبية/محايدة، واستخرج أكثر 3 منتجات مدحاً وأكثر منتجين شكوى." ثم يرسل النتيجة إلى Slack الخاص بفريق خدمة العملاء. النتيجة: استجابة أسرع للشكاوى، وتحسين المنتجات بناءً على بيانات حقيقية.</p>
+
+                <h2>4. أتمتة متقدمة: ربط N8N بـ WhatsApp API و ChatGPT</h2>
+                <p>تخيل أن العميل يرسل رسالة واتساب إلى رقم المتجر يسأل "أين طلبي رقم 12345؟". N8N تستقبل الـ Webhook من WhatsApp، تبحث عن الطلب في قاعدة البيانات، ترسل البيانات لـ ChatGPT لصياغة رد لطيف ومفيد، ثم ترد على العميل مباشرة عبر واتساب. كل هذا بدون كود!</p>
+                <div class="code-block"><pre><code>// مثال JavaScript داخل عقدة Function في N8N لتنسيق الرد
+const order = items[0].json;
+return {
+  orderId: order.id,
+  status: order.status,
+  message: `طلبك رقم ${order.id} حالته: ${order.status}`
+};</code></pre></div>
+
+                <h2>5. نصائح للبدء مع N8N</h2>
+                <ul>
+                    <li>ثبّتها على VPS باستخدام Docker (الأمر جاهز في موقع N8N).</li>
+                    <li>ابدأ بسيناريو بسيط (مثل: إرسال إيميل عند طلب جديد) ثم وسّع.</li>
+                    <li>استخدم Community Nodes لإضافة تكاملات غير موجودة افتراضياً.</li>
+                    <li>راقب الـ Workflows عبر Dashboard N8N المدمجة.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>N8N مع ChatGPT يمثلان ثنائياً قوياً لأتمتة متجرك وبناء مساعدين أذكياء بدون تعقيد. كمطوّر، يمكنك تثبيتها على سيرفرك الخاص وبناء حلول مخصصة تبهر عملاءك وتوفر لهم الوقت والمال.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

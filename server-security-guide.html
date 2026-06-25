@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأمين السيرفر خطوة بخطوة: كيف تحمي تطبيقك من 90% من الهجمات الشائعة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">تأمين السيرفر خطوة بخطوة: كيف تحمي تطبيقك من 90% من الهجمات الشائعة</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Hosting & Domains</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>تخيل أن تستيقظ صباحاً لتجد موقعك مخترقاً، بيانات العملاء مسربة، أو أسوأ: ملفاتك مشفرة ببرنامج فدية. معظم الهجمات لا تستهدف موقعك تحديداً، بل تمسح آلاف السيرفرات بحثاً عن ثغرات معروفة. 90% من الهجمات يمكن منعها بإعدادات أمان أساسية. سأشاركك خطوات عملية لتأمين سيرفرك، من واقع تجربتي في حماية متاجر إلكترونية.</p>
+
+                <h2>1. الجدار الناري (Firewall) – خط الدفاع الأول</h2>
+                <p>أغلق كل المنافذ التي لا تحتاجها. السيرفر العادي يحتاج فقط:</p>
+                <ul>
+                    <li>المنفذ 22 (SSH) – لكن غيّره إلى منفذ غير قياسي إن أمكن.</li>
+                    <li>المنفذ 80 و 443 (HTTP و HTTPS).</li>
+                    <li>المنفذ 3306 (MySQL) يجب أن يكون مغلقاً عن العالم، ومفتوحاً فقط لـ localhost.</li>
+                </ul>
+                <p>استخدم UFW (Uncomplicated Firewall) على Ubuntu:</p>
+                <div class="code-block"><pre><code>sudo ufw allow 22/tcp
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+sudo ufw status verbose</code></pre></div>
+
+                <h2>2. تأمين SSH – لا تدع أحداً يخمن كلمة مرورك</h2>
+                <ul>
+                    <li><strong>استخدم SSH Keys بدلاً من كلمة المرور:</strong> كلمة المرور يمكن تخمينها، لكن مفتاح SSH لا يمكن اختراقه عملياً.</li>
+                    <li><strong>غيّر منفذ SSH الافتراضي (22):</strong> هذا يمنع 99% من محاولات الاختراق الآلية.</li>
+                    <li><strong>عطّل تسجيل الدخول كـ root:</strong> استخدم مستخدماً عادياً ثم <code>sudo su</code>.</li>
+                </ul>
+                <div class="code-block"><pre><code># /etc/ssh/sshd_config
+Port 2222                      # غيّر المنفذ
+PermitRootLogin no             # امنع root من SSH مباشرة
+PasswordAuthentication no      # اعتمد المفاتيح فقط
+PubkeyAuthentication yes
+
+# بعد التعديل:
+sudo systemctl restart sshd</code></pre></div>
+
+                <h2>3. Fail2Ban – منع هجمات القوة العمياء (Brute Force)</h2>
+                <p>Fail2Ban يراقب ملفات السجلات (logs)، وإذا اكتشف محاولات فاشلة متكررة (مثل 5 محاولات SSH فاشلة من نفس IP)، فإنه يحظر هذا IP تلقائياً لمدة محددة.</p>
+                <div class="code-block"><pre><code>sudo apt install fail2ban -y
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+# تأكد من أنه يحمي SSH
+sudo fail2ban-client status sshd</code></pre></div>
+
+                <h2>4. تحديثات دورية – الثغرات تُكتشف كل يوم</h2>
+                <p>معظم الاختراقات تحدث عبر ثغرات معروفة لها تصحيحات منذ شهور، لكن السيرفر لم يُحدّث. ضع cron job للتحديثات الأمنية التلقائية:</p>
+                <div class="code-block"><pre><code>sudo apt update && sudo apt upgrade -y
+# للتحديثات الأمنية فقط:
+sudo unattended-upgrades</code></pre></div>
+
+                <h2>5. تأمين التطبيق نفسه – صلاحيات الملفات</h2>
+                <ul>
+                    <li>لا تجعل أي مجلد بصلاحية 777 (كتابة للجميع). هذا يدمر الأمان.</li>
+                    <li>في Laravel، صلاحيات <code>storage/</code> و <code>bootstrap/cache/</code> يجب أن تكون 775، وباقي الملفات 644.</li>
+                    <li>تأكد من أن <code>.env</code> غير قابل للقراءة من المتصفح. في Nginx، امنع الوصول للملفات المخفية:</li>
+                </ul>
+                <div class="code-block"><pre><code>location ~ /\. {
+    deny all;
+    return 404;
+}</code></pre></div>
+
+                <h2>6. شهادة SSL و CSP Headers</h2>
+                <ul>
+                    <li>استخدم HTTPS دائماً (Cloudflare SSL مجاني).</li>
+                    <li>أضف Content Security Policy (CSP) لمنع هجمات XSS:</li>
+                </ul>
+                <div class="code-block"><pre><code>add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;" always;</code></pre></div>
+                <ul>
+                    <li>أضف X-Frame-Options لمنع تضمين موقعك في iframe (هجمات Clickjacking).</li>
+                    <li>أضف X-Content-Type-Options: nosniff لمنع المتصفح من تخمين نوع الملف.</li>
+                </ul>
+
+                <h2>7. نسخ احتياطي – طوق النجاة الأخير</h2>
+                <p>حتى لو فشلت كل الدفاعات، النسخ الاحتياطي ينقذك. قم بأتمتة:</p>
+                <ul>
+                    <li>نسخ يومي لقاعدة البيانات.</li>
+                    <li>نسخ أسبوعي لكل الملفات.</li>
+                    <li>النسخ يجب أن يخزن خارج السيرفر (Google Drive، S3، أو استضافة أخرى).</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-shield-alt"></i> <strong>حصيلة:</strong> هذه الإجراءات السبعة (جدار ناري، SSH آمن، Fail2Ban، تحديثات، صلاحيات، SSL/CSP، نسخ احتياطي) تمنع 90% من الهجمات الشائعة. لا تحتاج لأن تكون خبير أمني لتطبيقها. ساعتان من الإعداد تحمي موقعك لسنوات.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>أمان السيرفر ليس رفاهية، بل مسؤولية. كل يوم تتأخر فيه عن تطبيق هذه الخطوات الأساسية هو يوم إضافي يكون فيه سيرفرك هدفاً سهلاً. ابدأ اليوم: أغلق المنافذ، أمّن SSH، فعّل Fail2Ban، وحدّث نظامك. تنام الليل مرتاح البال.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="hosting-domains.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Hosting & Domains</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنبيهات ذكية للمبرمج: كيف تراقب صحة سيرفرك وتتلقى إشعاراً فور تعطله - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">تنبيهات ذكية للمبرمج: كيف تراقب صحة سيرفرك وتتلقى إشعاراً فور تعطله</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Automation & AI</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>أسوأ كابوس للمطور: أن تكتشف أن موقع عميلك معطل منذ 3 ساعات... عندما يتصل بك العميل غاضباً. المراقبة الذكية للسيرفر ليست رفاهية، بل ضرورة. في هذا الدليل، سأريك كيف تبني نظام مراقبة مجانياً، يفحص سيرفرك كل دقيقة، وينبهك فوراً على واتساب أو تليغرام إذا حدث أي خلل.</p>
+
+                <h2>1. ماذا تراقب بالضبط؟</h2>
+                <p>لا تكتفِ بـ "هل الموقع يعمل؟". راقب هذه المؤشرات الحيوية:</p>
+                <ul>
+                    <li><strong>حالة HTTP:</strong> هل يرجع الموقع كود 200؟ أم 500؟ أم لا يستجيب أصلاً؟</li>
+                    <li><strong>استخدام CPU:</strong> إذا تجاوز 90% لأكثر من 5 دقائق، فهناك مشكلة.</li>
+                    <li><strong>استخدام RAM:</strong> اقتراب السيرفر من حد الذاكرة القصوى.</li>
+                    <li><strong>المساحة القرصية:</strong> امتلاء القرص يوقف قواعد البيانات فجأة.</li>
+                    <li><strong>حالة MySQL/Redis:</strong> هل الخدمات الأساسية تعمل؟</li>
+                    <li><strong>شهادة SSL:</strong> هل تقترب من الانتهاء؟</li>
+                </ul>
+
+                <h2>2. اسكريبت مراقبة شامل بلغة Bash</h2>
+                <p>ضع هذا الاسكريبت على سيرفرك (أو سيرفر خارجي صغير) وشغّله كل دقيقة عبر cron job:</p>
+                <div class="code-block"><pre><code>#!/bin/bash
+
+# ========== الإعدادات ==========
+SITE_URL="https://mysite.com"
+TELEGRAM_BOT_TOKEN="your-bot-token"
+TELEGRAM_CHAT_ID="your-chat-id"
+CPU_THRESHOLD=90
+RAM_THRESHOLD=90
+DISK_THRESHOLD=90
+
+# ========== دالة إرسال التنبيه ==========
+send_alert() {
+    local message="$1"
+    curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+        -d chat_id="${TELEGRAM_CHAT_ID}" \
+        -d text="🚨 تنبيه من السيرفر%0A${message}" \
+        -d parse_mode="HTML" > /dev/null
+}
+
+# ========== 1. فحص HTTP ==========
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${SITE_URL}")
+if [ "$HTTP_CODE" != "200" ]; then
+    send_alert "الموقع لا يستجيب! كود HTTP: ${HTTP_CODE}"
+fi
+
+# ========== 2. فحص CPU ==========
+CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | cut -d'%' -f1 | cut -d'.' -f1)
+if [ "$CPU_USAGE" -gt "$CPU_THRESHOLD" ]; then
+    send_alert "استخدام CPU مرتفع: ${CPU_USAGE}%"
+fi
+
+# ========== 3. فحص RAM ==========
+RAM_USAGE=$(free | grep Mem | awk '{printf "%.0f", $3/$2 * 100}')
+if [ "$RAM_USAGE" -gt "$RAM_THRESHOLD" ]; then
+    send_alert "استخدام RAM مرتفع: ${RAM_USAGE}%"
+fi
+
+# ========== 4. فحص المساحة القرصية ==========
+DISK_USAGE=$(df / | tail -1 | awk '{print $5}' | cut -d'%' -f1)
+if [ "$DISK_USAGE" -gt "$DISK_THRESHOLD" ]; then
+    send_alert "المساحة القرصية منخفضة: ${DISK_USAGE}%"
+fi
+
+# ========== 5. فحص MySQL ==========
+if ! systemctl is-active --quiet mysql; then
+    send_alert "خدمة MySQL متوقفة!"
+fi
+
+# ========== 6. فحص شهادة SSL (قبل 7 أيام من الانتهاء) ==========
+SSL_EXPIRY=$(echo | openssl s_client -servername mysite.com -connect mysite.com:443 2>/dev/null | openssl x509 -noout -enddate | cut -d'=' -f2)
+SSL_EXPIRY_EPOCH=$(date -d "${SSL_EXPIRY}" +%s)
+NOW_EPOCH=$(date +%s)
+DAYS_LEFT=$(( (SSL_EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
+if [ "$DAYS_LEFT" -lt 7 ]; then
+    send_alert "شهادة SSL ستنتهي خلال ${DAYS_LEFT} يوم!"
+fi</code></pre></div>
+
+                <h2>3. نسخة Node.js للمطورين</h2>
+                <p>إذا كنت تفضل JavaScript، فهذا اسكريبت Node.js يعمل بنفس المنطق:</p>
+                <div class="code-block"><pre><code>const axios = require('axios');
+const os = require('os');
+
+const TELEGRAM_TOKEN = 'your-bot-token';
+const CHAT_ID = 'your-chat-id';
+
+async function sendAlert(message) {
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+        chat_id: CHAT_ID,
+        text: `🚨 ${message}`,
+        parse_mode: 'HTML'
+    });
+}
+
+async function checkSite() {
+    try {
+        const response = await axios.get('https://mysite.com', { timeout: 10000 });
+        if (response.status !== 200) {
+            await sendAlert(`الموقع يرجع كود HTTP: ${response.status}`);
+        }
+    } catch (error) {
+        await sendAlert(`الموقع لا يستجيب: ${error.message}`);
+    }
+}
+
+async function checkCPU() {
+    const cpus = os.cpus();
+    const totalIdle = cpus.reduce((acc, cpu) => acc + cpu.times.idle, 0);
+    const totalTick = cpus.reduce((acc, cpu) => acc + cpu.times.user + cpu.times.nice + cpu.times.sys + cpu.times.irq + cpu.times.idle, 0);
+    const idle = totalIdle / cpus.length;
+    const total = totalTick / cpus.length;
+    // هنا تحتاج لحساب الفرق بين قراءتين، هذا تبسيط
+    const usage = 100 - (idle / total * 100);
+    if (usage > 90) await sendAlert(`استخدام CPU مرتفع: ${usage.toFixed(1)}%`);
+}
+
+// شغّل كل الفحوصات
+setInterval(async () => {
+    await checkSite();
+    await checkCPU();
+    // أضف فحوصات RAM، Disk، إلخ...
+    console.log('تم الفحص:', new Date().toISOString());
+}, 60000); // كل دقيقة</code></pre></div>
+
+                <h2>4. أدوات مراقبة جاهزة (إذا لم ترد بناء نظامك)</h2>
+                <ul>
+                    <li><strong>UptimeRobot:</strong> مجاني لـ 50 مراقباً، يفحص موقعك كل 5 دقائق، ينبهك على الإيميل أو Slack أو تليغرام.</li>
+                    <li><strong>Netdata:</strong> أداة مراقبة شاملة تثبت على السيرفر خلال دقيقة واحدة، تعطيك لوحة تحكم حية بكل التفاصيل.</li>
+                    <li><strong>Laravel Telescope:</strong> لمشاريع Laravel، يريك كل استعلام، Job، Exception في الوقت الحقيقي.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>قصة حقيقية:</strong> في أحد متاجر العملاء، امتلأ القرص الصلب بسبب ملفات logs ضخمة. توقفت MySQL فجأة، وتعطل الموقع بالكامل. اكتشفنا المشكلة بعد 4 ساعات عندما اشتكى العملاء. بعد تثبيت هذا الاسكريبت، صرنا نتلقى إشعاراً على تليغرام قبل أن تمتلأ المساحة، وننظف الـ logs فوراً. لم يتعطل الموقع بعدها أبداً.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>راقب سيرفرك قبل أن يراقبك عملاؤك. اسكريبت Bash بسيط + cron job + تليغرام = نظام مراقبة مجاني وفعال. 15 دقيقة من الإعداد توفر عليك ساعات من الذعر وإصلاح الأعطال المفاجئة. الأفضل أن تعرف بالمشكلة قبل أن يعرفها زوار موقعك.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="automation-ai.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Automation & AI</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

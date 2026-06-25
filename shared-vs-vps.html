@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Hosting ضد VPS: متى ترتقي ولماذا الصلاحيات تهمك كمبرمج - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Shared Hosting ضد VPS: متى ترتقي ولماذا الصلاحيات تهمك كمبرمج</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/shared-vs-vps.jpg" alt="Shared vs VPS" class="cover-image">
+
+                <p>مع نمو متجرك الإلكتروني، ستواجه لحظة قرار: هل تبقى على الاستضافة المشتركة أم ترتقي إلى VPS؟ هذا القرار ليس فقط عن السعر، بل عن الصلاحيات، الأداء، والأمان. سأروي لك قصة واقعية لمتجر انتقل من Shared إلى VPS، وكيف أثر ذلك على أدائه ومبيعاته، مع مقارنة شاملة.</p>
+
+                <h2>1. ما هو VPS ولماذا هو مختلف؟</h2>
+                <p>VPS (Virtual Private Server) هو سيرفر افتراضي خاص بك. أنت لا تشارك نظام التشغيل مع أحد، ولديك صلاحيات root كاملة. هذا يعني:</p>
+                <ul>
+                    <li>يمكنك تثبيت أي برنامج أو إعداد (Node.js، Redis، Git، إلخ).</li>
+                    <li>يمكنك تخصيص إعدادات Nginx/Apache بدقة.</li>
+                    <li>الموارد (CPU, RAM) مضمونة لك، لا تتأثر بمواقع الآخرين.</li>
+                </ul>
+
+                <h2>2. متى تنتقل إلى VPS؟</h2>
+                <p>اسأل نفسك هذه الأسئلة:</p>
+                <ul>
+                    <li>هل موقعك يتجاوز 50,000 زيارة شهرياً؟</li>
+                    <li>هل تحتاج إلى تثبيت Redis أو ElasticSearch أو مكتبات خاصة؟</li>
+                    <li>هل تعاني من بطء في أوقات الذروة بسبب "جيران" على الاستضافة المشتركة؟</li>
+                    <li>هل تحتاج لتشغيل عمليات خلفية (Queues, Cron Jobs) بشكل مستمر وموثوق؟</li>
+                </ul>
+                <p>إذا أجبت بنعم على اثنين منها، فالوقت حان للترقية.</p>
+
+                <h2>3. قصة واقعية: متجر إلكترونيات على زد</h2>
+                <p>كان المتجر مستضافاً على خطة مشتركة ممتازة. في البداية كان الأداء جيداً. لكن بعد سنة، وصل عدد الزوار لـ 80 ألف شهرياً. بدأت الشكاوى: "الموقع بطيء جداً في الليل". عند التحقيق، اكتشفت أن السيرفر المشترك عليه موقع آخر يستهلك موارد كبيرة وقت المساء. لا حل أمامنا سوى الانتقال إلى VPS.</p>
+                <p>بعد الانتقال إلى VPS مُدار مع 4GB RAM و 2 CPU:</p>
+                <ul>
+                    <li>زمن تحميل الصفحة الرئيسية انخفض من 4.2 إلى 0.9 ثانية.</li>
+                    <li>معدل الارتداد (Bounce Rate) انخفض 20%.</li>
+                    <li>المبيعات الشهرية ارتفعت 18% خلال أول شهرين.</li>
+                </ul>
+
+                <h2>4. تحديات VPS وكيف تتغلب عليها</h2>
+                <p>VPS يمنحك صلاحيات كاملة، لكن مع قوة أكبر تأتي مسؤولية أكبر:</p>
+                <ul>
+                    <li><strong>إدارة السيرفر:</strong> أنت مسؤول عن الأمان والتحديثات. استخدم لوحات مثل HestiaCP أو aaPanel لتسهيل الإدارة، أو استعن بـ VPS مُدار.</li>
+                    <li><strong>النسخ الاحتياطي:</strong> قم بأتمتة نسخ احتياطي يومي خارج السيرفر.</li>
+                    <li><strong>جدار الحماية:</strong> استخدم UFW أو CSF وافتح فقط المنافذ الضرورية.</li>
+                </ul>
+
+                <h2>5. خيارات VPS في السوق الخليجي</h2>
+                <ul>
+                    <li><strong>DigitalOcean / Vultr:</strong> سيرفرات في سنغافورة أو أوروبا، لكن البنغ في الخليج قد يكون 100-150ms.</li>
+                    <li><strong>MonsterASP VPS:</strong> سيرفراتهم قريبة، والبنغ أقل من 30ms داخل السعودية.</li>
+                    <li><strong>استضافة محلية:</strong> شركات سعودية تقدم VPS بأسعار منافسة وبينغ منخفض جداً، لكن تأكد من جودة الدعم.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>لا تتسرع في الانتقال إلى VPS قبل أن تحتاجه فعلاً. لكن عندما يحين الوقت، لا تتردد. الأداء المحسّن سينعكس مباشرة على تجربة العميل والمبيعات. تذكر: مع VPS، الصلاحيات الكاملة تعني مسؤولية كاملة، فاستثمر في التعلم أو اختر خطة مُدارة.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

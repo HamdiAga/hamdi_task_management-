@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL مجاني للأبد: كيف تحمي موقعك بـ Cloudflare في 10 دقائق - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">SSL مجاني للأبد: كيف تحمي موقعك بـ Cloudflare في 10 دقائق</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Hosting & Domains</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>وجود شهادة SSL على موقعك لم يعد رفاهية، بل ضرورة. غوغل يعطي أفضلية للمواقع المؤمنة بـ HTTPS، والمتصفحات تعرض تحذيراً مخيفاً للزوار إذا كان موقعك بدون SSL. الأجمل أنك تستطيع تفعيل SSL مجاناً باستخدام Cloudflare في 10 دقائق فقط. سأشرح لك الطريقة بالتفصيل، مع نصائح لتجنب المشاكل الشائعة.</p>
+
+                <h2>1. لماذا Cloudflare؟</h2>
+                <p>Cloudflare ليست مجرد SSL مجاني، بل هي شبكة توصيل محتوى (CDN) عملاقة تضيف لموقعك:</p>
+                <ul>
+                    <li><strong>SSL مجاني تلقائي التجديد:</strong> لا تقلق أبداً من انتهاء الشهادة.</li>
+                    <li><strong>حماية DDoS:</strong> تصد الهجمات الموزعة قبل أن تصل لسيرفرك.</li>
+                    <li><strong>CDN عالمي:</strong> تخزين مؤقت لملفات موقعك على 330+ موقعاً حول العالم، مما يسرع التحميل للزوار.</li>
+                    <li><strong>جدار حماية (WAF):</strong> يمنع محاولات الاختراق الشائعة.</li>
+                    <li><strong>كل هذا مجاني</strong> للخطة الأساسية.</li>
+                </ul>
+
+                <h2>2. خطوات التفعيل (10 دقائق)</h2>
+                <ol>
+                    <li><strong>أنشئ حساباً على Cloudflare:</strong> cloudflare.com، مجاني تماماً.</li>
+                    <li><strong>أضف موقعك:</strong> أدخل اسم النطاق (example.com)، واضغط "Add Site".</li>
+                    <li><strong>اختر الخطة Free:</strong> تكفي لمعظم المواقع.</li>
+                    <li><strong>Cloudflare ستمسح DNS Records الحالية:</strong> تأكد من وجود كل السجلات المهمة (A، CNAME، MX للإيميل).</li>
+                    <li><strong>غيّر Nameservers:</strong> Cloudflare ستعطيك nameserverين جديدين (مثل <code>john.ns.cloudflare.com</code>). اذهب إلى مزود النطاق الخاص بك (Namecheap، GoDaddy)، وغيّر الـ nameservers إلى هذين.</li>
+                    <li><strong>انتظر حتى 24 ساعة (غالباً 5-30 دقيقة):</strong> بمجرد تفعيل Cloudflare، اذهب إلى SSL/TLS > Overview واختر "Full" أو "Full (strict)".</li>
+                </ol>
+
+                <h2>3. إعدادات SSL المهمة في Cloudflare</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>الإعداد</th><th>الوصف</th><th>التوصية</th></tr></thead>
+                    <tbody>
+                        <tr><td>Flexible</td><td>تشفير بين الزائر و Cloudflare فقط</td><td>لا تستخدمه، غير آمن</td></tr>
+                        <tr><td>Full</td><td>تشفير من الزائر إلى سيرفرك (شهادة ذاتية كافية)</td><td>جيد لمعظم المواقع</td></tr>
+                        <tr><td>Full (strict)</td><td>مثل Full لكن يتطلب شهادة موثوقة على سيرفرك</td><td>الأفضل إذا كان سيرفرك يدعمه</td></tr>
+                        <tr><td>Always Use HTTPS</td><td>تحويل كل طلبات HTTP إلى HTTPS تلقائياً</td><td>فعّله دائماً</td></tr>
+                        <tr><td>HSTS</td><td>إخبار المتصفحات باستخدام HTTPS فقط</td><td>فعّله بعد التأكد من استقرار SSL</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>4. حل مشكلة "Too Many Redirects" بعد تفعيل Cloudflare</h2>
+                <p>إذا دخلت في حلقة إعادة توجيه لا نهائية بعد تفعيل Cloudflare، فالسبب غالباً تعارض بين إعدادات SSL في Cloudflare وسيرفرك. الحل:</p>
+                <ul>
+                    <li>تأكد أن SSL في Cloudflare مضبوط على "Full"، وليس "Flexible".</li>
+                    <li>إذا كان موقعك على ووردبريس، أضف هذه السطور في wp-config.php:</li>
+                </ul>
+                <div class="code-block"><pre><code>if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $_SERVER['HTTPS'] = 'on';
+}</code></pre></div>
+
+                <h2>5. فوائد إضافية لـ Cloudflare</h2>
+                <ul>
+                    <li><strong>Page Rules:</strong> أنشئ قواعد تخزين مؤقت مخصصة. مثلاً: خزّن الصور والملفات الثابتة لمدة شهر.</li>
+                    <li><strong>Auto Minify:</strong> ضغط تلقائي لـ JavaScript وCSS وHTML.</li>
+                    <li><strong>Brotli Compression:</strong> ضغط أفضل من Gzip، فعّله من Speed > Optimization.</li>
+                    <li><strong>5 جيجابايت حماية DDoS:</strong> في الخطة المجانية!</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-check-circle"></i> <strong>من تجربتي:</strong> بعد تفعيل Cloudflare على أحد متاجر سلة، انخفض زمن تحميل الصفحة الرئيسية من 2.8 إلى 1.1 ثانية. الـ CDN وحده يحدث فرقاً هائلاً للزوار في السعودية، لأن Cloudflare لديها سيرفرات في الإمارات.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>لا تدفع فلساً واحداً على شهادة SSL. Cloudflare تمنحك SSL مجاني متجدد تلقائياً، مع CDN عالمي، وحماية DDoS، وضغط للملفات. 10 دقائق من الإعداد تمنح موقعك أماناً وسرعة تدوم للأبد.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="hosting-domains.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Hosting & Domains</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

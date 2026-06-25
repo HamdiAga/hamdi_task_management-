@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أتمتة التقارير المملة: كيف تجعل Excel يرسل التقارير للإيميل تلقائياً كل صباح - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">أتمتة التقارير المملة: كيف تجعل Excel يرسل التقارير للإيميل تلقائياً كل صباح</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Automation & AI</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>هل تقضي كل صباح 30 دقيقة في فتح Excel، تحديث البيانات، تنسيق الجداول، ثم إرسال التقرير بالإيميل؟ توقف عن هذا فوراً. سأريك طريقتين لأتمتة هذه العملية بالكامل: واحدة باستخدام بايثون (للتحكم الكامل)، وأخرى باستخدام VBA داخل Excel نفسه (للحلول السريعة). في الحالتين، ستختصر 30 دقيقة يومياً إلى صفر.</p>
+
+                <h2>الطريقة الأولى: بايثون – الحل الاحترافي</h2>
+                <p>هذه الطريقة مناسبة عندما تكون بياناتك في قاعدة بيانات، وتريد تقريراً منسقاً يرسل تلقائياً. يجمع هذا الاسكريبت بين <code>pandas</code> لتحليل البيانات، <code>openpyxl</code> لتنسيق ملف Excel، و <code>smtplib</code> لإرسال الإيميل.</p>
+                <div class="code-block"><pre><code>import pandas as pd
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill
+from openpyxl.utils import get_column_letter
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import mysql.connector
+from datetime import datetime, timedelta
+
+# 1. جلب البيانات من قاعدة البيانات
+db = mysql.connector.connect(host="localhost", user="root", password="pass", database="store")
+yesterday = datetime.now() - timedelta(days=1)
+
+query = """
+    SELECT p.name, SUM(oi.quantity) as units_sold,
+           SUM(oi.quantity * oi.price) as revenue
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    JOIN orders o ON oi.order_id = o.id
+    WHERE DATE(o.created_at) = %s AND o.status = 'completed'
+    GROUP BY p.id
+    ORDER BY revenue DESC
+"""
+df = pd.read_sql(query, db, params=(yesterday.date(),))
+db.close()
+
+# 2. إنشاء ملف Excel منسق
+wb = Workbook()
+ws = wb.active
+ws.title = f"تقرير {yesterday.strftime('%Y-%m-%d')}"
+
+# تنسيق العنوان
+ws.merge_cells('A1:C1')
+ws['A1'] = f"تقرير المبيعات اليومي - {yesterday.strftime('%Y-%m-%d')}"
+ws['A1'].font = Font(size=16, bold=True, color='1F4E79')
+ws['A1'].alignment = Alignment(horizontal='center')
+
+# رؤوس الأعمدة
+headers = ['المنتج', 'الكمية المباعة', 'الإيرادات (ر.س)']
+for col, header in enumerate(headers, 1):
+    cell = ws.cell(row=3, column=col, value=header)
+    cell.font = Font(bold=True, color='FFFFFF')
+    cell.fill = PatternFill(start_color='1F4E79', end_color='1F4E79', fill_type='solid')
+    cell.alignment = Alignment(horizontal='center')
+
+# تعبئة البيانات
+for row_idx, (_, row) in enumerate(df.iterrows(), 4):
+    ws.cell(row=row_idx, column=1, value=row['name'])
+    ws.cell(row=row_idx, column=2, value=row['units_sold'])
+    ws.cell(row=row_idx, column=3, value=round(row['revenue'], 2))
+
+# ضبط عرض الأعمدة
+for col in range(1, 4):
+    ws.column_dimensions[get_column_letter(col)].width = 30
+
+# إضافة صف الإجمالي
+total_row = len(df) + 4
+ws.cell(row=total_row, column=1, value="الإجمالي").font = Font(bold=True)
+ws.cell(row=total_row, column=2, value=df['units_sold'].sum())
+ws.cell(row=total_row, column=3, value=round(df['revenue'].sum(), 2))
+
+filename = f"sales_report_{yesterday.strftime('%Y%m%d')}.xlsx"
+wb.save(filename)
+
+# 3. إرسال الملف بالإيميل
+msg = MIMEMultipart()
+msg['Subject'] = f'تقرير المبيعات - {yesterday.strftime("%Y-%m-%d")}'
+msg['From'] = 'reports@store.com'
+msg['To'] = 'manager@store.com'
+msg.attach(MIMEText(f'تقرير مبيعات {yesterday.strftime("%Y-%m-%d")} جاهز.', 'plain'))
+
+with open(filename, 'rb') as f:
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload(f.read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', f'attachment; filename={filename}')
+    msg.attach(part)
+
+with smtplib.SMTP('smtp.gmail.com', 587) as server:
+    server.starttls()
+    server.login('reports@store.com', 'app-password')
+    server.send_message(msg)
+
+print(f"تم إرسال {filename}")</code></pre></div>
+
+                <h2>الطريقة الثانية: VBA داخل Excel – حل سريع بدون بايثون</h2>
+                <p>إذا كانت بياناتك في ملف Excel نفسه وتريد إرساله تلقائياً دون تثبيت بايثون، فاضغط <code>Alt + F11</code> وأضف هذا الكود:</p>
+                <div class="code-block"><pre><code>Sub SendReportEmail()
+    Dim OutlookApp As Object
+    Dim OutlookMail As Object
+
+    Set OutlookApp = CreateObject("Outlook.Application")
+    Set OutlookMail = OutlookApp.CreateItem(0)
+
+    ' حفظ الملف الحالي
+    ThisWorkbook.Save
+
+    With OutlookMail
+        .To = "manager@store.com"
+        .Subject = "تقرير المبيعات - " & Format(Date - 1, "yyyy-mm-dd")
+        .Body = "تقرير المبيعات جاهز في المرفقات."
+        .Attachments.Add ThisWorkbook.FullName
+        .Send
+    End With
+
+    Set OutlookMail = Nothing
+    Set OutlookApp = Nothing
+End Sub</code></pre></div>
+                <p>لتشغيله تلقائياً كل صباح، استخدم Windows Task Scheduler لفتح ملف Excel واستدعاء هذا الماكرو.</p>
+
+                <h2>3. جدولة الاسكريبت</h2>
+                <p>لتشغيل اسكريبت بايثون تلقائياً كل صباح:</p>
+                <ul>
+                    <li><strong>Linux/Mac:</strong> أضف إلى crontab: <code>0 8 * * * /usr/bin/python3 /path/to/report.py</code></li>
+                    <li><strong>Windows:</strong> استخدم Task Scheduler لتشغيل <code>python report.py</code> يومياً الساعة 8 صباحاً.</li>
+                    <li><strong>Laravel:</strong> أضف أمراً مخصصاً (<code>php artisan report:daily</code>) وجدوله في <code>app/Console/Kernel.php</code>.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-clock"></i> <strong>حصيلة التوفير:</strong> 30 دقيقة يومياً × 30 يوماً = 15 ساعة شهرياً. هذا وقت كافٍ لبناء ميزة جديدة كاملة في مشروعك. الأتمتة لا توفر الوقت فقط، بل تمنع الأخطاء البشرية أيضاً (نسيان إرسال التقرير، خطأ في التنسيق، إلخ).</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>لا تقضِ صباحك في تحديث Excel. استخدم بايثون للأتمتة الكاملة (قاعدة بيانات → Excel → إيميل)، أو VBA للحلول السريعة داخل Excel نفسه. في الحالتين، ستستعيد 15 ساعة شهرياً من وقتك الثمين.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="automation-ai.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Automation & AI</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

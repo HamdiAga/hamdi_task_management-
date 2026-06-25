@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خارطة طريق SEO تقني للمبرمجين: كيف تصدر موقعك دون خبرة تسويقية سابقة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">خارطة طريق SEO تقني للمبرمجين: كيف تصدر موقعك دون خبرة تسويقية سابقة</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> SEO/ASO</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>الكثير من المبرمجين يظنون أن SEO هو "اكتب محتوى وانتظر غوغل". الحقيقة أنك كمبرمج تملك أفضلية هائلة في الـ SEO التقني (Technical SEO)، وهو الجزء الذي يؤثر مباشرة على ترتيب موقعك قبل أن تكتب كلمة محتوى واحدة. في هذه الخارطة، سآخذك من الصفر إلى موقع متصدر، حتى لو لم تكن لديك أي خبرة تسويقية سابقة.</p>
+
+                <h2>1. ما هو SEO التقني ولماذا هو سلاحك السري؟</h2>
+                <p>SEO التقني هو مجموعة التحسينات التي تجعل موقعك مفهوماً وسريعاً وآمناً في عيون محركات البحث. بينما المسوقون يركزون على الكلمات المفتاحية والمحتوى، أنت تستطيع التحكم في:</p>
+                <ul>
+                    <li>سرعة الموقع (Core Web Vitals).</li>
+                    <li>هيكلة الموقع (URL Structure, Sitemap).</li>
+                    <li>البيانات المنظمة (Structured Data / Schema.org).</li>
+                    <li>أمان الموقع (HTTPS, CSP).</li>
+                    <li>توافق الجوال (Mobile-First Indexing).</li>
+                </ul>
+                <p>هذه العوامل مجتمعة تشكل 50% من ترتيبك، وتستطيع تحسينها كلها دون كتابة مقال واحد.</p>
+
+                <h2>2. الخطوة الأولى: اجعل موقعك قابلاً للفهرسة</h2>
+                <p>قبل أن يفكر غوغل في ترتيبك، يجب أن يعرف أنك موجود. تأكد من:</p>
+                <ul>
+                    <li><strong>ملف robots.txt:</strong> لا تمنع غوغل بالخطأ! تأكد أن الملف لا يحتوي على <code>Disallow: /</code> إلا إذا كنت تريد منع صفحات معينة فعلاً.</li>
+                    <li><strong>خريطة الموقع (sitemap.xml):</strong> أنشئ خريطة موقع ديناميكية تتحدث تلقائياً. في Laravel استخدم <code>spatie/laravel-sitemap</code>، وفي أي لغة أخرى استخدم script بسيطاً يقرأ صفحاتك وينشئ XML.</li>
+                    <li><strong>Google Search Console:</strong> أضف موقعك فوراً. أرسل الـ sitemap، وتأكد من عدم وجود أخطاء تغطية (Coverage Errors).</li>
+                </ul>
+
+                <h2>3. الخطوة الثانية: هيكل موقع نظيف (URL Structure)</h2>
+                <p>غوغل يحب المواقع المنظمة. بعض القواعد الذهبية:</p>
+                <ul>
+                    <li>استخدم روابط وصفية: <code>/products/iphone-15</code> بدلاً من <code>/products?id=123</code>.</li>
+                    <li>استخدم شرطات (-) بين الكلمات، وليس (_).</li>
+                    <li>حافظ على تدرج منطقي: <code>/category/subcategory/product</code>.</li>
+                    <li>لا تستخدم معرّفات طويلة أو أحرف غير مفهومة.</li>
+                </ul>
+
+                <h2>4. الخطوة الثالثة: البيانات المنظمة (Schema.org)</h2>
+                <p>هذه هي المنطقة التي يتفوق فيها المبرمج. أضف JSON-LD لكل نوع من المحتوى:</p>
+                <div class="code-block"><pre><code>// مثال: Schema لمنتج
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "آيفون 15",
+  "description": "...",
+  "image": "https://mysite.com/images/iphone15.jpg",
+  "offers": {
+    "@type": "Offer",
+    "price": "3999",
+    "priceCurrency": "SAR",
+    "availability": "https://schema.org/InStock"
+  }
+}</code></pre></div>
+                <p>هذا الكود يجعل منتجك يظهر في نتائج البحث مع السعر والتقييم والتوفر مباشرة، مما يرفع نسبة النقر (CTR) بشكل كبير.</p>
+
+                <h2>5. الخطوة الرابعة: السرعة (Core Web Vitals)</h2>
+                <p>غوغل يستخدم مؤشرات Core Web Vitals كعامل ترتيب. كمبرمج، هذه مسؤوليتك:</p>
+                <ul>
+                    <li><strong>LCP (أكبر عنصر مرئي):</strong> يجب أن يكون أقل من 2.5 ثانية. حسّن صورك (WebP)، استخدم CDN، وفعّل lazy loading.</li>
+                    <li><strong>FID (أول تأخير إدخال):</strong> أقل من 100ms. قلل JavaScript الثقيل، استخدم async/defer.</li>
+                    <li><strong>CLS (ثبات التخطيط):</strong> أقل من 0.1. حدد أبعاد الصور والفيديوهات دائماً، ولا تدع المحتوى يقفز.</li>
+                </ul>
+
+                <h2>6. الخطوة الخامسة: التوافق مع الجوال (Mobile-First)</h2>
+                <p>غوغل يفهرس نسخة الجوال أولاً. تأكد من:</p>
+                <ul>
+                    <li>تصميم Responsive بالكامل.</li>
+                    <li>نفس المحتوى في نسخة الجوال وسطح المكتب.</li>
+                    <li>أزرار قابلة للنقر (لا تجعلها صغيرة جداً).</li>
+                    <li>سرعة تحميل على 4G.</li>
+                </ul>
+
+                <h2>7. مثال من واقع السوق</h2>
+                <p>في أحد متاجر الإلكترونيات على زد، طبقنا هذه الخارطة. الموقع كان في الصفحة الخامسة رغم أن محتواه أفضل من المنافسين. بعد تطبيق التحسينات التقنية: sitemap ديناميكي، Schema للمنتجات، تحسين Core Web Vitals، و Mobile-First كامل – خلال 6 أسابيع، 70% من المنتجات دخلت الصفحة الأولى.</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-lightbulb"></i> <strong>نصيحة:</strong> لا تنتظر حتى يكتمل موقعك لتبدأ SEO. SEO التقني يبدأ من أول سطر كود. ابنِه مع الموقع، لا بعده.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>SEO التقني هو ملعبك كمبرمج. أتقن هذه الخارطة: قابلية الفهرسة، هيكل الروابط، البيانات المنظمة، السرعة، وتوافق الجوال. هذه الأسس وحدها كفيلة بوضع موقعك في الصفحات الأولى قبل أن تكتب مقالاً واحداً.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="seo-aso.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى SEO/ASO</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>
