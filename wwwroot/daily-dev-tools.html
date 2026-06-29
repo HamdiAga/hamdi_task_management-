@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأدوات التي أستخدمها يومياً كفول ستاك لتسريع الشغل - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">الأدوات التي أستخدمها يومياً كفول ستاك لتسريع الشغل</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/dev-tools.jpg" alt="أدوات المطور اليومية" class="cover-image">
+
+                <p>الإنتاجية كمبرمج لا تأتي من العمل لساعات أطول، بل من استخدام الأدوات الصحيحة. بعد سنوات من تطوير المتاجر الإلكترونية والتطبيقات، استقررت على مجموعة أدوات يومية تختصر عليّ ساعات من العمل كل أسبوع. سأشاركك هذه الأدوات مع أمثلة عملية لاستخدامي لها.</p>
+
+                <h2>1. Terminal (محطة الطرفية) محسّنة</h2>
+                <p>الـ Terminal ليس مجرد شاشة سوداء، بل هو أسرع طريقة للتحكم في كل شيء. أستخدم <strong>Windows Terminal</strong> مع <strong>PowerShell 7</strong> و <strong>Git Bash</strong> مدمجين في تبويبات. أهم إعداداتي:</p>
+                <ul>
+                    <li><strong>Oh My Posh:</strong> لتزيين الـ prompt بمعلومات مثل الفرع الحالي في Git وحالة السيرفر.</li>
+                    <li><strong>Aliases:</strong> اختصارات جاهزة مثل <code>gpo = git push origin</code> و <code>art = php artisan</code>.</li>
+                    <li><strong>Tab Completion:</strong> فعّلت الإكمال التلقائي في PowerShell لكل من Git و Composer و npm.</li>
+                </ul>
+
+                <h2>2. VS Code Extensions الأساسية</h2>
+                <p>في VS Code، هذه الإضافات لا تفارقني:</p>
+                <ul>
+                    <li><strong>Laravel Extension Pack:</strong> يوفر auto-complete، snippets، وتنسيق blade.</li>
+                    <li><strong>Prettier:</strong> لتنسيق الكود تلقائياً عند الحفظ (لكل من HTML, CSS, JS, PHP).</li>
+                    <li><strong>GitLens:</strong> لرؤية تاريخ كل سطر كود وأسماء المعدّلين دون مغادرة المحرر.</li>
+                    <li><strong>Thunder Client:</strong> بديل خفيف لـ Postman داخل VS Code مباشرة، أستخدمه لاختبار API بسرعة.</li>
+                    <li><strong>Error Lens:</strong> يظهر الأخطاء والتحذيرات بجوار السطر مباشرة.</li>
+                </ul>
+
+                <h2>3. npm Packages لا أستغني عنها</h2>
+                <ul>
+                    <li><strong>axios:</strong> لكل طلبات HTTP في الواجهة الأمامية، مع interceptors لإضافة التوكن تلقائياً.</li>
+                    <li><strong>lodash:</strong> دوال مساعدة قوية للتعامل مع المصفوفات والكائنات.</li>
+                    <li><strong>dayjs:</strong> مكتبة تواريخ خفيفة جداً (2KB) بدلاً من moment.js الثقيل.</li>
+                    <li><strong>sharp:</strong> في Node.js لتحسين الصور وتغيير حجمها بسرعة فائقة.</li>
+                </ul>
+
+                <h2>4. Postman Tricks</h2>
+                <p>Postman ليس فقط لإرسال طلبات API. حيل أستخدمها باستمرار:</p>
+                <ul>
+                    <li><strong>Environment Variables:</strong> أستخدم متغيرات لـ base_url و token. بكبسة زر أنتقل بين بيئة التطوير المحلية وبيئة الإنتاج.</li>
+                    <li><strong>Pre-request Scripts:</strong> أكتب سكريبت JavaScript صغير يسجل الدخول تلقائياً ويخزن التوكن في المتغير قبل كل طلب.</li>
+                    <li><strong>Tests Tab:</strong> أكتب اختبارات سريعة: <code>pm.expect(pm.response.code).to.equal(200)</code> للتأكد من صحة الـ API.</li>
+                    <li><strong>Collections + Runner:</strong> أنشئ مجموعة طلبات وأشغلها كلها دفعة واحدة لاختبار الـ API كاملاً.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-clock"></i> <strong>وفر 30 دقيقة يومياً:</strong> إذا كنت تختبر API بشكل متكرر، أنشئ Collection في Postman مع كل الـ endpoints مرة واحدة. كل مشروع جديد، عدّل فقط الـ base URL. هذا وحده يوفر عليّ ساعات أسبوعياً.</p>
+                </div>
+
+                <h2>5. أدوات في ترسانتي</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>الأداة</th><th>الاستخدام</th><th>لماذا هي مميزة</th></tr></thead>
+                    <tbody>
+                        <tr><td>TablePlus</td><td>إدارة قواعد البيانات</td><td>أسرع من phpMyAdmin، يدعم MySQL, PostgreSQL, SQLite</td></tr>
+                        <tr><td>Laravel Telescope</td><td>مراقبة التطبيق</td><td>يريك كل استعلام، كل Job، كل Exception في لوحة واحدة</td></tr>
+                        <tr><td>Docker Desktop</td><td>بيئات تطوير معزولة</td><td>أشغل Redis, MySQL, Meilisearch في حاويات منفصلة</td></tr>
+                        <tr><td>Obsidian</td><td>ملاحظات وتوثيق</td><td>أحفظ فيه أفكاري، حلول المشاكل، ومقتطفات الكود</td></tr>
+                        <tr><td>GitHub Copilot</td><td>مساعد برمجة بالذكاء الاصطناعي</td><td>يكمل لي الدوال الروتينية ويقترح حلولاً أسرع</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>خلاصة</h2>
+                <p>الأدوات الجيدة تستثمر فيها وقتاً مرة واحدة، ثم توفر عليك الوقت يومياً. لا تفرط في الأدوات، اختر ما يناسب سير عملك وأتقنه. ابدأ بـ Terminal محسّن، VS Code مضبوط، وPostman ذكي، وستلاحظ الفرق في إنتاجيتك خلال أسبوع.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

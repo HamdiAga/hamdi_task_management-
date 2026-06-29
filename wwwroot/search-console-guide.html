@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل ربط Google Search Console بموقعك البرمجي واستخراج الكنوز المخفية - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">دليل ربط Google Search Console بموقعك البرمجي واستخراج الكنوز المخفية</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> SEO/ASO</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>Google Search Console هي الأداة المجانية التي تمنحك عيوناً على كيفية رؤية غوغل لموقعك. كثير من المطورين يربطونها ثم ينسونها. لكن الحقيقة أن Search Console تحتوي على كنوز مخفية من البيانات التي يمكنها مضاعفة زوار موقعك إذا عرفت كيف تستخدمها. سأريك بالتفصيل كيف تربطها، وكيف تستخرج هذه الكنوز.</p>
+
+                <h2>1. ربط Search Console بموقعك (خطوات عملية)</h2>
+                <p>هناك عدة طرق للتحقق من ملكية موقعك:</p>
+                <ul>
+                    <li><strong>ملف HTML:</strong> حمّل ملف HTML من Search Console وارفعه إلى مجلد <code>public/</code>. هذه الطريقة الأسهل.</li>
+                    <li><strong>وسم HTML:</strong> أضف meta tag في <code>&lt;head&gt;</code> لصفحتك الرئيسية:</li>
+                </ul>
+                <div class="code-block"><pre><code>&lt;meta name="google-site-verification" content="رمز-التحقق-الخاص-بك" /&gt;</code></pre></div>
+                <ul>
+                    <li><strong>DNS TXT Record:</strong> أضف سجلاً TXT في إعدادات النطاق. هذه الطريقة لا تحتاج رفع ملفات، وتعمل حتى لو كان موقعك معطلاً.</li>
+                    <li><strong>Google Analytics / Tag Manager:</strong> إذا كنت تستخدم GA4 أو GTM بالفعل، يمكنك التحقق من خلالهما.</li>
+                </ul>
+                <p>نصيحتي: استخدم DNS TXT Record، فهي الأنظف ولا تؤثر على موقعك.</p>
+
+                <h2>2. إرسال خريطة الموقع (Sitemap)</h2>
+                <p>بعد التحقق، أول شيء تفعله: اذهب إلى قسم Sitemaps وأرسل رابط خريطة موقعك: <code>https://yoursite.com/sitemap.xml</code>. هذا يخبر غوغل بكل صفحاتك المهمة. إذا كان موقعك ديناميكياً، تأكد أن sitemap يتحدث تلقائياً عند إضافة صفحات جديدة.</p>
+
+                <h2>3. الكنز الأول: تقرير الأداء (Performance Report)</h2>
+                <p>هذا هو أهم قسم في Search Console. يريك:</p>
+                <ul>
+                    <li><strong>إجمالي النقرات:</strong> كم مرة ضغط زائر على رابط موقعك في نتائج البحث.</li>
+                    <li><strong>إجمالي مرات الظهور:</strong> كم مرة ظهر موقعك في نتائج البحث، حتى لو لم ينقر أحد.</li>
+                    <li><strong>متوسط CTR:</strong> نسبة النقرات إلى مرات الظهور.</li>
+                    <li><strong>متوسط الموضع:</strong> ترتيب موقعك في النتائج لكل استعلام.</li>
+                </ul>
+                <p><strong>كيف تستخرج الكنز:</strong></p>
+                <ol>
+                    <li>فلتر حسب آخر 28 يوماً.</li>
+                    <li>اختر "الاستعلامات".</li>
+                    <li>رتّب حسب "مرات الظهور" تنازلياً.</li>
+                    <li>ابحث عن الكلمات التي تظهر كثيراً (مرات ظهور عالية) لكن بمتوسط موضع 8-15 ونسبة نقر منخفضة.</li>
+                </ol>
+                <p>هذه الكلمات هي كنزك. موقعك يظهر في الصفحة الأولى أو الثانية، لكن الناس لا ينقرون. لماذا؟ لأن عنوانك أو وصفك لا يجذبهم. حسّن العنوان والوصف لهذه الصفحات تحديداً، وسترتفع نسبة النقر بشكل كبير.</p>
+
+                <h2>4. الكنز الثاني: الصفحات ذات الزيارات المنخفضة</h2>
+                <p>في تقرير الأداء، انتقل لعلامة تبويب "الصفحات". رتب حسب "النقرات" تصاعدياً. سترى صفحات لم تحصل على أي نقرة، لكنها تظهر في البحث. هذه الصفحات تحتاج إلى:</p>
+                <ul>
+                    <li>تحسين العنوان والوصف.</li>
+                    <li>إضافة محتوى أكثر.</li>
+                    <li>ربطها بصفحات داخلية أخرى لتقويتها.</li>
+                </ul>
+
+                <h2>5. الكنز الثالث: تقرير التغطية (Coverage)</h2>
+                <p>هذا القسم يريك الصفحات التي فهرسها غوغل، والتي رفضها، والتي بها أخطاء. أخطاء شائعة:</p>
+                <ul>
+                    <li><strong>404 Not Found:</strong> صفحات محذوفة. أعد توجيهها إلى صفحات بديلة (301 Redirect).</li>
+                    <li><strong>Redirect Error:</strong> حلقات إعادة توجيه لا تنتهي.</li>
+                    <li><strong>Blocked by robots.txt:</strong> صفحات مهمة منعت بالخطأ.</li>
+                    <li><strong>Crawled – currently not indexed:</strong> غوغل زار الصفحة لكنه اختار عدم فهرستها. السبب غالباً محتوى ضعيف أو مكرر.</li>
+                </ul>
+
+                <h2>6. الكنز الرابع: تحسينات Core Web Vitals والتجربة</h2>
+                <p>قسم "Core Web Vitals" و"تجربة الصفحة" يريانك بالضبط أي صفحات بطيئة أو غير مستقرة على الجوال وسطح المكتب. هذه البيانات تأتي من مستخدمين حقيقيين (Chrome User Experience Report)، وليست محاكاة. ركز على الصفحات المصنفة "سيئة" أو "تحتاج تحسيناً".</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-gem"></i> <strong>كنز خفي:</strong> قارن بيانات Search Console مع Google Analytics. إذا كانت صفحة لديها زيارات عالية في Analytics لكن نقرات منخفضة في Search Console، هذا يعني أن الزوار يأتون من مصادر أخرى غير البحث (إعلانات، مباشر، Social). هذه الصفحات فرصة ذهبية لتحسين SEO لتحصل على زوار عضويين أيضاً.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>Google Search Console ليست مجرد أداة "اربطها وانسها". إنها منجم بيانات مجاني يريك بالضبط أين موقعك قوي وأين يحتاج تحسيناً. اربطها، أرسل sitemap، وراقب تقرير الأداء كل أسبوع. الكنوز موجودة، فقط تحتاج من يبحث عنها.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="seo-aso.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى SEO/ASO</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

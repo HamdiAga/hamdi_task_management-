@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جسر بين التقنيتين: متى تختار WebView ومتى تنتقل لتطبيق Native؟ - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">جسر بين التقنيتين: متى تختار WebView ومتى تنتقل لتطبيق Native؟</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/webview-vs-native.jpg" alt="WebView ضد Native" class="cover-image">
+
+                <p>بصفتي مطوراً تعامل مع متاجر سلة وزِد وشوبفاي، أسمع هذا السؤال باستمرار من التجار: "أبغى تطبيق جوال، وش الأفضل؟" الإجابة تعتمد على تحليل عميق، لا على الموضة. سأعطيك معايير اختيارية دقيقة من تجارب حية.</p>
+
+                <h2>1. توضيح المفاهيم</h2>
+                <ul>
+                    <li><strong>WebView:</strong> تطبيق جوال يضم متصفحاً مدمجاً يعرض موقعك الإلكتروني بتجربة شبه محلية، غالباً مع إخفاء شريط العنوان، ودعم الإشعارات الأولية. أشهر الأدوات: Trusted Web Activity (TWA) من غوغل، PWABuilder، Capacitor (لفتح بعض الميزات المحلية).</li>
+                    <li><strong>Hybrid:</strong> مثل Ionic أو React Native WebView، يجمع بين كود ويب ومكونات محلية.</li>
+                    <li><strong>Native:</strong> تطبيق مكتوب بلغة المنصة (Kotlin/Java لأندرويد، Swift لأيفون) أو باستخدام إطار عمل عابر مثل Flutter أو React Native مع مكونات محلية.</li>
+                </ul>
+
+                <h2>2. جدول مقارنة محدث ومعمق</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>المعيار</th><th>WebView</th><th>Native</th></tr></thead>
+                    <tbody>
+                        <tr><td>التكلفة الأولية</td><td>منخفضة جداً (أيام)</td><td>متوسطة إلى عالية (أسابيع لأشهر)</td></tr>
+                        <tr><td>سرعة التطوير</td><td>عالية (إعادة استخدام موقعك)</td><td>منخفضة (بناء من الصفر)</td></tr>
+                        <tr><td>تجربة المستخدم</td><td>متوسطة (تأخير تحميل، عدم سلاسة كاملة)</td><td>عالية (سلاسة، رسوم متحركة، إيماءات)</td></tr>
+                        <tr><td>الوصول للعتاد</td><td>محدود (كاميرا، GPS عبر JavaScript)</td><td>كامل (بلوتوث، NFC، مستشعرات)</td></tr>
+                        <tr><td>الإشعارات</td><td>أساسية عبر Service Workers</td><td>متقدمة، تفاعلية، مجدولة محلياً</td></tr>
+                        <tr><td>تحديثات المتجر</td><td>نشر فوري دون مراجعة (تغيير الموقع)</td><td>تحتاج مراجعة آبل/غوغل (أيام)</td></tr>
+                        <tr><td>أداء الرسوميات</td><td>ضعيف (HTML/Canvas)</td><td>ممتاز (OpenGL، Vulkan)</td></tr>
+                        <tr><td>التواجد في المتاجر</td><td>أصعب (سياسات متشددة لـ WebView الفارغ)</td><td>سهل طالما يلتزم بالإرشادات</td></tr>
+                        <tr><td>الصيانة</td><td>منخفضة (صيانة موقع واحد)</td><td>مرتفعة (كودين أو ثلاثة)</td></tr>
+                        <tr><td>تحسينات App Store</td><td>لا تظهر في Top Charts عادة</td><td>قابلة للتحسين ASO كامل</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>3. شجرة قرار الاختيار</h2>
+                <div class="code-block"><pre><code>هل تحتاج ميزة واحدة مما يلي؟
+├─ إشعارات دفع تفاعلية مخصصة؟
+├─ استخدام كاميرا أو GPS أو بلوتوث بشكل مكثف؟
+├─ أداء رسومي عالٍ (ألعاب، رسوم متحركة معقدة)؟
+├─ وصول للعتاد (مستشعرات، NFC، ماسح بصمة)؟
+├─ تجربة مستخدم سلسة ١٠٠٪ (تنقلات سريعة، إيماءات)؟
+└─ العمل بدون إنترنت بشكل كامل؟
+إذا أجبت بنعم → فكّر في Native
+إذا كانت كلها لا → WebView يكفي</code></pre></div>
+
+                <h2>4. حالة هجينة: البدء بـ WebView والترقية لاحقاً</h2>
+                <p>هذه الاستراتيجية ذكية جداً للمبتدئين والمتاجر الصغيرة في الخليج:</p>
+                <ol>
+                    <li>ابدأ بـ WebView لتكون موجوداً سريعاً وبتكلفة منخفضة.</li>
+                    <li>اجمع بيانات المستخدمين وسلوكهم.</li>
+                    <li>عندما يزيد عدد المستخدمين النشطين وتظهر احتياجات محددة، ابدأ ببناء شاشات محددة بـ Flutter (مثلاً: شاشة السلة والدفع) واستدعها من WebView.</li>
+                    <li>تدريجياً، استبدل باقي الشاشات.</li>
+                </ol>
+                <p>هذه الطريقة تسمى "الترقية التدريجية" (Incremental Migration) وتستخدمها شركات عالمية.</p>
+
+                <h2>5. مثال من السوق السعودي (تفصيلي)</h2>
+                <p><strong>متجر عطور في سلة:</strong></p>
+                <ul>
+                    <li><strong>البداية:</strong> استخدم تطبيق سلة WebView المجاني. كان التاجر سعيداً لسرعة إطلاقه.</li>
+                    <li><strong>المشكلة بعد سنة:</strong> العملاء يشتكون من بطء فتح المنتجات، وعدم وجود إشعارات تذكيرية بعربة التسوق المهملة، وضعف تجربة التصفح.</li>
+                    <li><strong>التحليل:</strong> 70% من المبيعات تأتي من الجوال، لكن معدل التحويل نصف معدل الموقع على متصفح الجوال العادي! السبب: WebView لا يدعم تحسينات الأداء المطلوبة.</li>
+                    <li><strong>الحل:</strong> بنينا تطبيق Flutter بسيطاً، استدعينا منتجات سلة عبر API الخاص بهم، وصممنا تجربة شراء سريعة (3 شاشات: المنتجات، تفاصيل المنتج، السلة والدفع). أضفنا إشعارات Firebase للعربة المهملة.</li>
+                    <li><strong>النتيجة (بعد 3 أشهر):</strong> تضاعف معدل التحويل، 40% من المبيعات صارت عبر التطبيق، وقلّت شكاوى البطء تماماً.</li>
+                </ul>
+
+                <h2>6. أخطاء شائعة عند الاختيار</h2>
+                <ul>
+                    <li>التقليل من قوة WebView: بعض التجار يظن أن WebView "رخيص" ولا يليق، بينما هو ممتاز للمرحلة الأولى.</li>
+                    <li>المبالغة في تقدير احتياجات Native: ليس كل مشروع يحتاج Flutter، أحياناً تكفي PWA جيدة.</li>
+                    <li>إهمال تحسين سرعة موقع الويب: إذا كان موقعك بطيئاً، WebView سيكون كارثة. سرّع موقعك أولاً.</li>
+                </ul>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

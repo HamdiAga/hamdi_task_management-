@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 تعديلات في كود الموقع رفعت لي ترتيب الكلمات المفتاحية 30% في أسبوعين - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">5 تعديلات في كود الموقع رفعت لي ترتيب الكلمات المفتاحية 30% في أسبوعين</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> SEO/ASO</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>أحياناً، تغييرات صغيرة في الكود تصنع فرقاً هائلاً في ترتيب موقعك. هذا ليس تنظيراً، بل تجربة حقيقية قمت بها على أحد متاجر سلة الإلكترونية. بعد هذه التعديلات الخمسة، ارتفع ترتيب 12 كلمة مفتاحية مستهدفة بنسبة 30% في أسبوعين فقط. سأشرح لك كل تعديل بالتفصيل مع الكود.</p>
+
+                <h2>1. إصلاح العناوين المكررة (Canonical URLs)</h2>
+                <p><strong>المشكلة:</strong> نفس المنتج يظهر في فئتين مختلفتين برابطين مختلفين: <code>/electronics/iphone</code> و <code>/mobile/iphone</code>. غوغل يعتبرهما صفحتين منفصلتين، مما يشتت قوة الرابط.</p>
+                <p><strong>الحل:</strong> أضف وسم canonical في كل صفحة فرعية يشير إلى الرابط الأساسي:</p>
+                <div class="code-block"><pre><code>&lt;link rel="canonical" href="https://mysite.com/products/iphone-15" /&gt;</code></pre></div>
+                <p>في Laravel، أضف هذا في الـ layout الرئيسي ليكون ديناميكياً:</p>
+                <div class="code-block"><pre><code>&lt;link rel="canonical" href="{{ url()->current() }}" /&gt;</code></pre></div>
+
+                <h2>2. تحسين وسم Title و Meta Description</h2>
+                <p><strong>المشكلة:</strong> العناوين كانت "الرئيسية - متجري" في كل الصفحات. مأساة SEO.</p>
+                <p><strong>الحل:</strong> اجعل كل صفحة لها عنوان فريد يحتوي على الكلمة المفتاحية:</p>
+                <div class="code-block"><pre><code>&lt;title&gt;{{ $product->name }} - اشتري الآن بأفضل سعر | {{ config('app.name') }}&lt;/title&gt;
+&lt;meta name="description" content="{{ Str::limit($product->description, 160) }}" /&gt;</code></pre></div>
+                <p>القاعدة: العنوان 50-60 حرفاً، الوصف 150-160 حرفاً، ويحتويان على الكلمة المفتاحية بشكل طبيعي.</p>
+
+                <h2>3. إضافة العناوين الهرمية (Heading Hierarchy)</h2>
+                <p><strong>المشكلة:</strong> الصفحة تستخدم H1 ثم H3 مباشرة، أو تستخدم H1 متعدد.</p>
+                <p><strong>الحل:</strong> التزم بالترتيب المنطقي:</p>
+                <ul>
+                    <li>H1 واحد فقط في الصفحة = اسم المنتج أو عنوان المقال.</li>
+                    <li>H2 للأقسام الرئيسية.</li>
+                    <li>H3 للأقسام الفرعية.</li>
+                </ul>
+                <p>هذا يساعد غوغل على فهم بنية المحتوى ويعطي وزناً أكبر للكلمات المفتاحية في العناوين.</p>
+
+                <h2>4. تحسين الصور (Alt Text + أبعاد)</h2>
+                <p><strong>المشكلة:</strong> صور المنتجات بدون alt، أو بأبعاد غير محددة تسبب CLS.</p>
+                <p><strong>الحل:</strong></p>
+                <div class="code-block"><pre><code>&lt;img src="iphone15.jpg" alt="آيفون 15 برو ماكس 256GB أزرق تيتانيوم" width="800" height="800" loading="lazy" /&gt;</code></pre></div>
+                <p>نص alt يجب أن يصف الصورة بدقة ويحتوي على الكلمات المفتاحية بشكل طبيعي. لا تحشو كلمات مفتاحية.</p>
+
+                <h2>5. تحسين الروابط الداخلية (Internal Linking)</h2>
+                <p><strong>المشكلة:</strong> صفحات المنتجات كانت "صفحات يتيمة" (Orphan Pages) لا توجد أي صفحة تشير إليها.</p>
+                <p><strong>الحل:</strong> أضف قسم "منتجات ذات صلة" أو "العملاء اشتروا أيضاً" في كل صفحة منتج، مع روابط داخلية طبيعية. هذا يوزع قوة الموقع بين الصفحات ويساعد غوغل على اكتشاف كل صفحاتك.</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-chart-line"></i> <strong>النتيجة بعد أسبوعين:</strong> 12 كلمة مفتاحية مستهدفة انتقلت من الصفحة الثالثة إلى الأولى، و 5 منها دخلت المراكز الثلاثة الأولى. كل هذا بتعديلات في الكود فقط، دون كتابة أي محتوى جديد.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>لا تستهن بالتعديلات الصغيرة. Canonical URLs، عناوين فريدة، هيكل عناوين صحيح، صور محسّنة، وروابط داخلية – هذه الخمسة وحدها يمكنها أن تقفز بموقعك 30% في أسبوعين. جربها على موقعك وراقب Search Console.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="seo-aso.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى SEO/ASO</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

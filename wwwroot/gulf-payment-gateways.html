@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ربط أنظمة المدفوعات الإلكترونية في السعودية والخليج: دليل المطوّر العملي - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">ربط أنظمة المدفوعات الإلكترونية في السعودية والخليج: دليل المطوّر العملي</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/gulf-payments.jpg" alt="بوابات الدفع الخليجية" class="cover-image">
+
+                <p>الدفع الإلكتروني في الخليج يختلف تماماً عن الأسواق الغربية. لدينا مدى، تمارا، STC Pay، Tap، وغيرها. كمطوّر، ربط هذه البوابات بشكل صحيح هو الفرق بين متجر يبيع ومتجر يخسر عملاءه عند صفحة الدفع. سأشرح لك كيف تتعامل مع كل بوابة، مع أمثلة عملية ونصائح من واقع السوق.</p>
+
+                <h2>1. خريطة بوابات الدفع في السعودية والخليج</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>البوابة</th><th>النوع</th><th>التكامل</th><th>أفضل استخدام</th></tr></thead>
+                    <tbody>
+                        <tr><td>مدى</td><td>بطاقات سعودية (مدى، فيزا، ماستركارد)</td><td>REST API / SDK</td><td>المتاجر التي تبيع للسوق المحلي السعودي</td></tr>
+                        <tr><td>تمارا</td><td>الدفع لاحقاً (BNPL)</td><td>REST API</td><td>متاجر الأزياء والإلكترونيات</td></tr>
+                        <tr><td>STC Pay</td><td>محفظة رقمية</td><td>REST API</td><td>المتاجر التي تستهدف مستخدمي الجوال</td></tr>
+                        <tr><td>Tap</td><td>تجميع بوابات (مدى، فيزا، Apple Pay)</td><td>REST API / JS SDK</td><td>المتاجر التي تريد حلاً واحداً لجميع البوابات</td></tr>
+                        <tr><td>PayPal</td><td>بوابة عالمية</td><td>REST API</td><td>المتاجر التي تبيع دولياً</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>2. نموذج ربط بوابة مدى (HyperPay كمثال)</h2>
+                <p>معظم بوابات الدفع السعودية تتطلب تدفقاً مماثلاً:</p>
+                <ol>
+                    <li>أنشئ طلب دفع (Checkout) عبر API برقم طلب فريد وسعر ومصادقة.</li>
+                    <li>استلم رابط أو redirect_token من البوابة.</li>
+                    <li>وجّه المستخدم إلى صفحة الدفع الآمنة على البوابة.</li>
+                    <li>بعد الدفع، البوابة ترسل Webhook إلى عنوان خاص في API تطبيقك (مثل /api/payment/callback).</li>
+                    <li>تحقق من صحة الـ Webhook باستخدام Secret Key، ثم حدّث حالة الطلب.</li>
+                </ol>
+                <div class="code-block"><pre><code>// Laravel: معالجة Webhook من بوابة الدفع
+public function handleWebhook(Request $request) {
+    $payload = $request->all();
+    $signature = $request->header('X-Signature');
+
+    // تحقق من التوقيع
+    if (!$this->isValidSignature($payload, $signature)) {
+        return response()->json(['error' => 'Invalid signature'], 401);
+    }
+
+    $order = Order::where('payment_id', $payload['transaction_id'])->first();
+    if ($order && $payload['status'] === 'success') {
+        $order->update(['status' => 'paid', 'paid_at' => now()]);
+        // أرسل إشعار للعميل
+    }
+
+    return response()->json(['success' => true]);
+}</code></pre></div>
+
+                <h2>3. الدفع لاحقاً – تمارا وTabby</h2>
+                <p>الدفع بالتقسيط والدفع لاحقاً أصبح مهماً جداً في السوق السعودي. طريقة الربط:</p>
+                <ul>
+                    <li>أرسل تفاصيل الطلب (المنتجات، الأسعار، معلومات العميل) إلى API تمارا.</li>
+                    <li>تمارا ترجع redirect_url لصفحة الدفع الخاصة بهم.</li>
+                    <li>بعد موافقة تمارا، تستلم Webhook وتحدث حالة الطلب.</li>
+                </ul>
+
+                <h2>4. ربط بوابات الدفع مع WooCommerce وسلة وشوبفاي</h2>
+                <ul>
+                    <li><strong>WooCommerce:</strong> استخدم إضافات جاهزة لـ Tap أو مدى. لكن إن كنت تريد تخصيصاً عميقاً، استخدم WooCommerce Payment Gateway API وابنِ تكاملك الخاص.</li>
+                    <li><strong>سلة:</strong> سلة توفر API جاهز للدفع مع مدى وتمارا. دورك كمطوّر هو تنسيق تجربة المستخدم بعد الدفع (صفحة شكر مخصصة، إشعارات).</li>
+                    <li><strong>شوبفاي:</strong> استخدم Shopify Payments أو إضافات البوابات المحلية. شوبفاي يدعم معظم البوابات الخليجية عبر إضافات الطرف الثالث.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>تحذير من تجربتي:</strong> في أحد المشاريع، نسينا توثيق Webhook بشكل صحيح، فتمكن مخترق من إرسال Webhooks مزيفة وتغيير حالة الطلبات إلى "مدفوع" دون دفع فعلي. استخدم دائماً التحقق من التوقيع (HMAC) ولا تثق بأي Webhook بدون مصادقة.</p>
+                </div>
+
+                <h2>5. أفضل الممارسات عند ربط المدفوعات</h2>
+                <ul>
+                    <li><strong>Idempotency Keys:</strong> أرسل مفتاحاً فريداً مع كل طلب دفع لمنع تكرار العملية إذا ضغط المستخدم مرتين.</li>
+                    <li><strong>تسجيل كل شيء:</strong> سجّل كل طلب وكل Webhook وكل خطأ في جدول payment_logs. هذا ينقذك عند حدوث نزاع مع العميل.</li>
+                    <li><strong>تجربة السقوط (Fallback):</strong> إذا فشلت بوابة الدفع، اعرض للمستخدم خياراً آخر. لا تخسر عملية بيع بسبب تعطل بوابة.</li>
+                    <li><strong>الامتثال لـ PCI DSS:</strong> لا تخزّن أبداً بيانات بطاقات الائتمان في قاعدة بياناتك. استخدم tokens من البوابة نفسها.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>الدفع الإلكتروني في الخليج سوق ديناميكي. كمطوّر، فهمك لهذه البوابات وطريقة ربطها بشكل آمن وسلس يجعلك شريكاً تقنياً لا غنى عنه للتجار. ابدأ ببوابة واحدة، أتقنها، ثم وسّع.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

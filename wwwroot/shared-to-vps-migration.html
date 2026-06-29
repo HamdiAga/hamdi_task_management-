@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف هاجرت مواقعي من الاستضافة المشتركة إلى VPS دون لحظة تعطيل - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف هاجرت مواقعي من الاستضافة المشتركة إلى VPS دون لحظة تعطيل</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Hosting & Domains</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>الهجرة من استضافة مشتركة إلى VPS تشبه نقل منزلك بالكامل أثناء سكنك فيه. أي خطأ صغير يؤدي إلى توقف موقعك لساعات، وفقدان زوار ومبيعات. لقد هاجرت أكثر من 5 مواقع لمتاجر إلكترونية ومنصات، وطورت خطة محكمة تضمن انتقالاً سلساً بدون أي لحظة تعطيل. سأشاركك هذه الخطة خطوة بخطوة.</p>
+
+                <h2>1. التحضير قبل الهجرة بيومين</h2>
+                <ul>
+                    <li><strong>نسخ احتياطي كامل:</strong> استخدم أداة مثل <code>mysqldump</code> لقاعدة البيانات، وضغط كل ملفات الموقع في ملف tar.gz.</li>
+                    <li><strong>جهّز VPS الجديد:</strong> ثبّت Nginx أو Apache، PHP 8.2، MySQL 8، Redis، وأي إضافات يحتاجها موقعك. استخدم aaPanel أو HestiaCP لتسهيل الإدارة إذا كنت لا تفضل التعامل مع الطرفية مباشرة.</li>
+                    <li><strong>أنشئ قاعدة البيانات الفارغة:</strong> بنفس اسم قاعدة البيانات القديمة، وأنشئ المستخدمين بنفس الصلاحيات.</li>
+                    <li><strong>اختبر في عنوان IP:</strong> معظم لوحات التحكم تسمح لك بمعاينة الموقع عبر IP السيرفر قبل توجيه النطاق.</li>
+                </ul>
+
+                <h2>2. نقل الملفات وقاعدة البيانات</h2>
+                <div class="code-block"><pre><code># 1. تصدير قاعدة البيانات من الاستضافة القديمة
+mysqldump -u old_user -p old_database > backup.sql
+
+# 2. استيرادها إلى VPS الجديد
+mysql -u new_user -p new_database < backup.sql
+
+# 3. ضغط ملفات الموقع على الاستضافة القديمة
+tar -czf site_backup.tar.gz public_html/
+
+# 4. نقل الملفات إلى VPS الجديد باستخدام rsync أو scp
+scp site_backup.tar.gz root@new-server-ip:/var/www/
+
+# 5. فك الضغط في مجلد الموقع الجديد
+tar -xzf site_backup.tar.gz -C /var/www/mysite/</code></pre></div>
+
+                <h2>3. تحديث الإعدادات قبل التوجيه</h2>
+                <p>قبل تغيير DNS، تأكد من:</p>
+                <ul>
+                    <li><strong>تحديث .env:</strong> غيّر إعدادات قاعدة البيانات (DB_HOST، DB_USER، DB_PASSWORD) لتشير إلى قاعدة البيانات الجديدة. إذا كنت ستستخدم Redis، فتأكد من إعداداته أيضاً.</li>
+                    <li><strong>صلاحيات المجلدات:</strong> في Laravel، تأكد من أن <code>storage/</code> و <code>bootstrap/cache/</code> قابلان للكتابة (<code>chmod 775</code>).</li>
+                    <li><strong>تعطيل HTTPS مؤقتاً في السيرفر الجديد:</strong> سنفعّله بعد دقيقة من تغيير DNS.</li>
+                </ul>
+
+                <h2>4. لحظة تغيير DNS – الدقيقة الحرجة</h2>
+                <p>اذهب إلى مزود النطاق (Namecheap، GoDaddy، إلخ) وغيّر A Record ليشير إلى IP السيرفر الجديد. قيمة TTL (Time To Live) يجب أن تكون منخفضة (300 ثانية = 5 دقائق) قبل 24 ساعة من الهجرة على الأقل. هذا يضمن أن تغيير DNS ينتشر بسرعة.</p>
+                <p><strong>الخطة:</strong></p>
+                <ol>
+                    <li>غيّر DNS (A Record) إلى IP الجديد.</li>
+                    <li>في نفس اللحظة، فعّل SSL على السيرفر الجديد (Certbot أو aaPanel سيفعلان ذلك تلقائياً).</li>
+                    <li>راقب زيارات السيرفر القديم (سجل access.log). عندما تتوقف الزيارات، فهذا يعني أن DNS انتشر.</li>
+                    <li>أبقِ الاستضافة القديمة لمدة 48 ساعة إضافية. بعض مزودي الإنترنت قد يتأخرون في تحديث DNS. إذا توقف الموقع لأحدهم، سيوجهه DNS القديم للاستضافة القديمة التي لا تزال تعمل.</li>
+                </ol>
+
+                <h2>5. اختبارات ما بعد الهجرة</h2>
+                <ul>
+                    <li>افتح الموقع على متصفح عادي، متصفح مخفي، ومن الجوال.</li>
+                    <li>اختبر نموذج اتصال، صفحة دفع، أي وظيفة تفاعلية.</li>
+                    <li>تحقق من logs: <code>tail -f /var/log/nginx/error.log</code>.</li>
+                    <li>اختبر SSL عبر <a href="https://www.ssllabs.com/ssltest/" target="_blank">SSL Labs</a>.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-gem"></i> <strong>سر النجاح:</strong> لا تحذف أي شيء من الاستضافة القديمة قبل 72 ساعة. أنشئ قاعدة البيانات الجديدة، ارفع الملفات، اختبر، ثم غيّر DNS. إذا حدث أي خطأ، يمكنك إعادة DNS للقديم خلال دقائق. وجود خطة تراجع هو ما يمنع الكوارث.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>الهجرة إلى VPS ليست مخيفة إذا اتبعت خطة محكمة: نسخ احتياطي، اختبار في الخلفية، تغيير DNS مع TTL منخفض، ومراقبة. تذكر: أبقِ السيرفر القديم حياً ليومين إضافيين. مع هذه الخطة، هاجرت متاجر إلكترونية بدون أن يلاحظ الزوار أي شيء.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="hosting-domains.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Hosting & Domains</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

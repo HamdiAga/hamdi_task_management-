@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لماذا يكره المبرمجون تصاميم المسوقين؟ وكيف تصمم شيء يحبه الجميع - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">لماذا يكره المبرمجون تصاميم المسوقين؟ وكيف تصمم شيء يحبه الجميع</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Design & Creative Production</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>كم مرة سلمك المسوق تصميماً لـ Landing Page، فنظرت إليه وقلت: "هذا جميل... لكنه غير قابل للتنفيذ"؟ أو العكس: بنيت واجهة مثالية تقنياً، فقال المسوق: "هذا بارد، لا يبيع". الفجوة بين المبرمجين والمسوقين في التصميم حقيقية ومكلفة. في هذا المقال، سأشرح جذور هذه الفجوة، وكيف تصمم شيئاً يرضي الطرفين: جميل للمستخدم، وقابل للتنفيذ للمبرمج، ويحقق أهداف المسوق.</p>
+
+                <h2>1. جذور الفجوة: عقلان مختلفان</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>المعيار</th><th>عقلية المبرمج</th><th>عقلية المسوق</th></tr></thead>
+                    <tbody>
+                        <tr><td>التركيز الأساسي</td><td>كيف يعمل الشيء؟</td><td>كيف يبدو الشيء؟</td></tr>
+                        <tr><td>معيار النجاح</td><td>الوظيفة تؤدي المطلوب بدون أخطاء</td><td>التصميم يثير المشاعر ويدفع للشراء</td></tr>
+                        <tr><td>العلاقة مع القيود</td><td>يرى القيود كحقائق (سرعة، توافق)</td><td>يرى القيود كعوائق يجب كسرها</td></tr>
+                        <tr><td>مصدر الإلهام</td><td>الكود، الـ Docs، Stack Overflow</td><td>Behance، Dribbble، Pinterest</td></tr>
+                        <tr><td>ما يكرهه</td><td>تصميم معقد تقنياً بلا داعٍ</td><td>تصميم ممل لا يثير أي عاطفة</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>2. أكثر 3 صراعات بين المبرمج والمسوق في التصميم</h2>
+                <h3>الصراع 1: الصور العملاقة</h3>
+                <p><strong>المسوق:</strong> "أريد صورة Full-width عالية الدقة، 5000px، بجودة 100%".<br>
+                <strong>المبرمج:</strong> "هذه الصورة وحدها 8MB، ستجعل Core Web Vitals في الحضيض."</p>
+                <p><strong>الحل الوسط:</strong> استخدم WebP بجودة 80%، حجم 1200-1600px عرض، مع lazy loading. الصورة ستبدو رائعة للعين، وحجمها أقل من 150KB.</p>
+
+                <h3>الصراع 2: الخطوط المخصصة</h3>
+                <p><strong>المسوق:</strong> "استخدمنا هذا الخط الجميل في التصميم." (يرسل 5 ملفات خطوط بحجم 2MB).<br>
+                <strong>المبرمج:</strong> "هذا سيضيف 2MB للتحميل."</p>
+                <p><strong>الحل الوسط:</strong> استخدم Google Fonts مع subset للعربية فقط، واستخدم font-display: swap. أو الأفضل: استخدم خطاً عربياً نظامياً مثل Tajawal أو Cairo.</p>
+
+                <h3>الصراع 3: الأنيميشن</h3>
+                <p><strong>المسوق:</strong> "نريد أنيميشن رائعاً عند فتح الصفحة، شيء يخطف الأنفاس!"<br>
+                <strong>المبرمج:</strong> "هذا سيستهلك 500ms من FID وسيعذب الجوالات."</p>
+                <p><strong>الحل الوسط:</strong> استخدم CSS animations بدلاً من JavaScript، مع prefers-reduced-motion للمستخدمين الذين يفضلون بدون حركة. أنيميشن بسيط 200-300ms لطيف ولا يؤثر على الأداء.</p>
+
+                <h2>3. كيف تصمم شيئاً يحبه الجميع – 5 قواعد</h2>
+                <ol>
+                    <li><strong>شارك المبرمج مبكراً:</strong> لا تنتظر حتى يكتمل التصميم. اعرض الإطارات الشبكية (Wireframes) أولاً. اسأل: "هل هذا ممكن تقنياً خلال إطارنا الزمني؟"</li>
+                    <li><strong>صمم بمكتبة مكونات موحدة (Design System):</strong> اتفق على أزرار، ألوان، تباعدات، خطوط قياسية. هذا يمنع "التصميم العشوائي" لكل صفحة.</li>
+                    <li><strong>استخدم أدوات تعاون:</strong> Figma هي الجسر المثالي. المبرمج يرى الـ CSS تلقائياً من Figma (Inspect mode).</li>
+                    <li><strong>ضع الأداء كهدف تصميمي:</strong> أضف "سرعة التحميل" كمعيار في مراجعة التصميم. اسأل: "هل يمكن أن تعمل هذه الصفحة في أقل من 2.5 ثانية؟"</li>
+                    <li><strong>اختبر مع مستخدمين حقيقيين:</strong> تصميم يعجب المسوق والمبرمج قد يفشل مع المستخدم الحقيقي. جلسة اختبار واحدة تختصر أسابيع من الجدال.</li>
+                </ol>
+
+                <h2>4. أدوات تترجم بين اللغتين</h2>
+                <ul>
+                    <li><strong>Figma Dev Mode:</strong> يعطي المبرمج CSS و SwiftUI و XML مباشرة من التصميم.</li>
+                    <li><strong>Storybook:</strong> للمبرمجين، يبنون مكونات UI معزولة ويشاركونها مع المسوقين للمراجعة.</li>
+                    <li><strong>Lighthouse:</strong> أداة في Chrome تقيم التصميم من ناحية الأداء. أشرك المسوق في رؤية النتيجة.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-handshake"></i> <strong>خلاصة تجربتي:</strong> أفضل المشاريع التي عملت عليها كانت التي جلس فيها المبرمج والمسوق معاً في أول يوم، واتفقا على "لغة مشتركة": الأبعاد، الألوان، الخطوط، وحدود الأداء. 3 ساعات من الاتفاق المبكر تمنع 3 أسابيع من التعديلات لاحقاً.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>الفجوة بين المبرمج والمسوق ليست قدراً. هي نتيجة لغات مختلفة وأدوات مختلفة وأهداف مختلفة. الحل: التواصل المبكر، التصميم بمكتبة موحدة، ووضع الأداء كهدف تصميمي. عندما يتكلم الطرفان لغة واحدة، يخرج التصميم جميلاً، قابلاً للتنفيذ، ويحقق المبيعات.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="design-production.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Design & Creative Production</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

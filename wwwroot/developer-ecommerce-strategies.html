@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تسوق لمتجر إلكتروني كمبرمج: استراتيجيات تقنية لا يعرفها المسوق التقليدي - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تسوق لمتجر إلكتروني كمبرمج: استراتيجيات تقنية لا يعرفها المسوق التقليدي</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Technical Marketing</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>المبرمج الذي يفهم التسويق هو كائن نادر وخطير في السوق. أنت لا تكتفي ببناء المتجر، بل تستطيع تحليله تقنياً، أتمتة تسويقه، وتتبع نتائجه بدقة لا يصل إليها المسوق التقليدي. في هذا المقال، سأشاركك استراتيجيات تسويقية من منظور المطوّر، مع أمثلة حقيقية من متاجر سلة وزِد وشوبفاي في السوق السعودي.</p>
+
+                <h2>1. تحسين محركات البحث بشكل تقني عميق</h2>
+                <p>المسوق التقليدي يعرف كتابة المحتوى والكلمات المفتاحية. لكنك كمبرمج تستطيع:</p>
+                <ul>
+                    <li><strong>بناء خريطة موقع ديناميكية:</strong> تحدث نفسها تلقائياً عند إضافة منتج جديد. في Laravel استخدم <code>spatie/laravel-sitemap</code>.</li>
+                    <li><strong>إضافة Structured Data (JSON-LD):</strong> للمنتجات، الأسعار، التقييمات. هذا يجعل منتجاتك تظهر بنجوم ومراجعات في نتائج بحث غوغل.</li>
+                    <li><strong>تحسين Core Web Vitals:</strong> ضغط الصور إلى WebP، تفعيل lazy loading، استخدام CDN، وتقليل JavaScript غير الضروري.</li>
+                </ul>
+                <p>في أحد متاجر سلة، بعد تطبيق هذه التحسينات التقنية وحدها (دون كتابة أي محتوى جديد)، ارتفع ترتيب 12 كلمة مفتاحية إلى الصفحة الأولى خلال شهر.</p>
+
+                <h2>2. أتمتة التسويق بأدوات المطور</h2>
+                <p>بدلاً من شراء أدوات تسويق باشتراكات شهرية، استخدم قوتك في البرمجة:</p>
+                <ul>
+                    <li><strong>إشعارات السلة المهملة:</strong> اسكريبت بسيط (Laravel Task Scheduler أو Node.js cron) يتحقق من العربات المهملة ويرسل إشعار Web Push أو إيميل تلقائياً.</li>
+                    <li><strong>تقارير مبيعات تلقائية:</strong> اسكريبت بايثون يجمع البيانات من قاعدة البيانات، ينسقها في Excel، ويرسلها بالإيميل كل صباح.</li>
+                    <li><strong>تكامل واتساب:</strong> باستخدام WhatsApp Business API، أرسل تأكيدات الطلبات وتحديثات الشحن تلقائياً.</li>
+                </ul>
+
+                <h2>3. تحليل البيانات بطريقة المبرمج</h2>
+                <p>المسوق ينظر إلى "عدد الزوار". أنت تنظر إلى:</p>
+                <ul>
+                    <li>نسبة التحويل حسب سرعة الصفحة (صفحة بطيئة = تحويل أقل).</li>
+                    <li>أكثر الصفحات خروجاً (Exit Pages) وتحليل أخطاء JavaScript فيها.</li>
+                    <li>تتبع رحلة العميل من الإعلان إلى الشراء باستخدام UTM parameters وقاعدة بيانات مخصصة.</li>
+                    <li>بناء لوحة تحكم (Dashboard) حية تجمع البيانات من Google Analytics API و Facebook Ads API في مكان واحد.</li>
+                </ul>
+
+                <h2>4. تجارب تقنية تسويقية من واقع السوق</h2>
+                <div class="tip-box">
+                    <p><i class="fas fa-chart-line"></i> <strong>تجربتي مع متجر عطور على زد:</strong> بنينا نظام توصيات بسيطاً: "العملاء الذين اشتروا هذا المنتج اشتروا أيضاً...". استخدمنا خوارزمية collaborative filtering بسيطة. النتيجة: زيادة 15% في متوسط قيمة الطلب.</p>
+                </div>
+                <p>مثال آخر: أضفنا عداداً تنازلياً (Countdown Timer) على صفحة الدفع، مرتبطاً بوقت السيرفر وليس وقت المتصفح. استخدمنا JavaScript بسيطاً مع WebSocket لتحديث العداد لكل الزوار في نفس الوقت. زادت المبيعات بنسبة 22% خلال أيام التخفيضات.</p>
+
+                <h2>5. أدوات المبرمج المسوّق</h2>
+                <ul>
+                    <li><strong>Google Tag Manager + Custom JavaScript:</strong> لتتبع أي حدث بدون تعديل الكود كل مرة.</li>
+                    <li><strong>N8N / Zapier:</strong> لربط المتجر بجداول Google Sheets أو إشعارات Slack دون كتابة كود.</li>
+                    <li><strong>Browser DevTools:</strong> Network tab لتحليل سرعة الصفحات، Lighthouse لفحص SEO والأداء.</li>
+                    <li><strong>Postman:</strong> لاختبار APIs بوابات الدفع والشحن قبل ربطها بالمتجر.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>كونك مبرمجاً يمنحك أفضلية هائلة في التسويق. لا تكتفِ ببناء المتجر، بل استخدم أدواتك التقنية لتسويقه بذكاء. SEO تقني، أتمتة التسويق، وتحليل البيانات بعمق – هذه هي أسلحتك التي لا يملكها المسوق التقليدي. ابدأ اليوم، وشاهد النتائج تتحدث عن نفسها.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="technical-marketing.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Technical Marketing</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

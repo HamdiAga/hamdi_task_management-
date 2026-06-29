@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تجعل موقعك صديقاً لـ Core Web Vitals وتجتاز تحديثات غوغل الجديدة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تجعل موقعك صديقاً لـ Core Web Vitals وتجتاز تحديثات غوغل الجديدة</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> SEO/ASO</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>غوغل تعلن كل عام عن تحديثات جديدة لخوارزمياتها، لكن منذ 2021، أصبحت Core Web Vitals عامل ترتيب رسمي. إذا كان موقعك لا يجتاز هذه المؤشرات، فأنت تخسر ترتيبك لصالح منافسين أسرع وأكثر استقراراً. في هذا الدليل العملي، سأشرح لك كل مؤشر وكيف تحسّنه من منظور المطور.</p>
+
+                <h2>1. ما هي Core Web Vitals؟</h2>
+                <p>ثلاثة مؤشرات تقيس تجربة المستخدم الحقيقية على موقعك:</p>
+                <table class="comparison-table">
+                    <thead><tr><th>المؤشر</th><th>ماذا يقيس</th><th>الحد الممتاز</th><th>الحد السيئ</th></tr></thead>
+                    <tbody>
+                        <tr><td>LCP (Largest Contentful Paint)</td><td>زمن تحميل أكبر عنصر مرئي</td><td>أقل من 2.5 ثانية</td><td>أكثر من 4.0 ثوانٍ</td></tr>
+                        <tr><td>FID (First Input Delay)</td><td>زمن استجابة المتصفح لأول تفاعل</td><td>أقل من 100ms</td><td>أكثر من 300ms</td></tr>
+                        <tr><td>CLS (Cumulative Layout Shift)</td><td>ثبات التخطيط البصري</td><td>أقل من 0.1</td><td>أكثر من 0.25</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>2. تحسين LCP – اجعل موقعك يظهر بسرعة</h2>
+                <p>أكبر عنصر مرئي عادة يكون صورة أو فيديو أو نص كبير. لتحسين LCP:</p>
+                <ul>
+                    <li><strong>حوّل الصور إلى WebP أو AVIF:</strong> هاتان الصيغتان تقللان حجم الصورة حتى 70% بدون خسارة جودة مرئية. استخدم <code>sharp</code> في Node.js أو <code>Intervention Image</code> في Laravel.</li>
+                    <li><strong>استخدم CDN:</strong> Cloudflare أو AWS CloudFront يوزع صورك من أقرب موقع جغرافي للمستخدم. في الخليج، هذا يعني سيرفرات في الإمارات أو السعودية.</li>
+                    <li><strong>فعّل Lazy Loading خارج الشاشة فقط:</strong> الصورة التي تظهر فوراً (Above the fold) يجب أن تُحمّل فوراً بدون lazy loading. أضف <code>loading="lazy"</code> فقط للصور التي تظهر بعد التمرير.</li>
+                    <li><strong>Preload الصور الحرجة:</strong> أضف <code>&lt;link rel="preload" as="image" href="hero.jpg" /&gt;</code> للصورة الرئيسية.</li>
+                </ul>
+
+                <h2>3. تحسين FID – اجعل موقعك يستجيب فوراً</h2>
+                <p>FID يقيس التأخير بين ضغط المستخدم على زر واستجابة المتصفح. السبب الرئيسي: JavaScript الثقيل الذي يحجب الخيط الرئيسي. الحلول:</p>
+                <ul>
+                    <li><strong>قسّم JavaScript:</strong> استخدم Code Splitting (كما شرحنا في مقال سابق). لا تحمّل 2MB من JS في الصفحة الرئيسية.</li>
+                    <li><strong>استخدم Web Workers:</strong> انقل العمليات الثقيلة (مثل معالجة الصور أو الحسابات) إلى Web Worker لتعمل في الخلفية دون حجب الصفحة.</li>
+                    <li><strong>Defer JavaScript:</strong> أضف <code>defer</code> أو <code>async</code> لكل السكريبتات غير الضرورية للعرض الأولي.</li>
+                    <li><strong>قلل JavaScript الخارجي:</strong> كل إضافة أو شريط أدوات طرف ثالث (مثل Facebook Pixel أو Google Maps) تضيف تأخيراً. اسأل نفسك: هل أحتاجها فعلاً في هذه الصفحة؟</li>
+                </ul>
+
+                <h2>4. تحسين CLS – امنع المحتوى من القفز</h2>
+                <p>CLS هو أكثر مؤشر يزعج المستخدمين: تفتح صفحة، تضغط على زر، وفجأة يقفز الزر بسبب تحميل صورة أو إعلان فوقه. الحلول:</p>
+                <ul>
+                    <li><strong>حدد أبعاد كل الصور والفيديوهات:</strong> <code>width="800" height="600"</code> في HTML أو <code>aspect-ratio</code> في CSS. هذا يحجز المساحة قبل تحميل الصورة.</li>
+                    <li><strong>لا تدخل محتوى ديناميكياً فوق المحتوى الحالي:</strong> إذا أضفت Banner إعلاني، احجز له مساحة مسبقاً.</li>
+                    <li><strong>الخطوط المخصصة:</strong> استخدم <code>font-display: swap</code> لمنع النص من الاختفاء ثم الظهور بخط مختلف.</li>
+                </ul>
+
+                <h2>5. كيف تقيس Core Web Vitals؟</h2>
+                <ul>
+                    <li><strong>Google Search Console:</strong> قسم Core Web Vitals يريك بالضبط أي صفحات تحتاج تحسيناً.</li>
+                    <li><strong>PageSpeed Insights:</strong> يعطيك تقريراً مفصلاً مع توصيات محددة.</li>
+                    <li><strong>Lighthouse:</strong> مدمج في Chrome DevTools. شغّله على أي صفحة لترى النتيجة.</li>
+                    <li><strong>Chrome User Experience Report (CrUX):</strong> بيانات حقيقية من مستخدمين فعليين.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-check-circle"></i> <strong>من تجربتي:</strong> في أحد متاجر سلة، كان LCP 5.8 ثانية بسبب صور المنتجات بدقة 4000px. بعد تحويلها لـ WebP وإضافة CDN، انخفض LCP إلى 1.4 ثانية، وارتفع ترتيب الموقع 14 مركزاً في أسبوعين.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>Core Web Vitals ليست موضة عابرة، بل هي معيار غوغل الجديد لتجربة المستخدم. LCP للسرعة، FID للاستجابة، CLS للثبات. حسّن هذه المؤشرات الثلاثة، وسترى موقعك يرتفع في الترتيب بينما يتراجع المنافسون المتكاسلون.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="seo-aso.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى SEO/ASO</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

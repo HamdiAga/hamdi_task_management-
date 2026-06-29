@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استراتيجيات الـ Code Splitting وتحسين أداء تطبيقات الويب الثقيلة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">استراتيجيات الـ Code Splitting وتحسين أداء تطبيقات الويب الثقيلة (React/Vue/Laravel)</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/code-splitting.jpg" alt="Code Splitting وتحسين الأداء" class="cover-image">
+
+                <p>عندما يصل متجرك إلى حجم معين، يصبح ملف الـ JavaScript ضخماً، مما يبطئ التحويل ويزعج الزوار. الحل ليس في حذف الميزات، بل في تقسيم الكود. في هذا المقال، سأشرح لك استراتيجيات Code Splitting في React وVue وLaravel Vite لتحسين أداء تطبيقات الويب الثقيلة.</p>
+
+                <h2>1. ما هو Code Splitting؟</h2>
+                <p>بدلاً من تحميل كل JavaScript في الموقع دفعة واحدة، Code Splitting يقسم الكود إلى أجزاء (chunks) صغيرة تُحمّل فقط عند الحاجة. مثال: كود صفحة "السلة" لا يُحمّل إلا عندما يضغط الزائر على أيقونة السلة.</p>
+                <p>النتيجة المباشرة: زمن تحميل الصفحة الأولى يقل بشكل كبير، والمستخدم يرى المحتوى أسرع، فيقل معدل الارتداد ويزيد التحويل.</p>
+
+                <h2>2. Code Splitting في React</h2>
+                <p>React يوفر React.lazy و Suspense لتحميل المكونات بشكل كسول:</p>
+                <div class="code-block"><pre><code>// بدلاً من
+import CartPage from './pages/CartPage';
+
+// استخدم
+const CartPage = React.lazy(() => import('./pages/CartPage'));
+
+// في JSX
+<Suspense fallback={<div>تحميل...</div>}>
+    <CartPage />
+</Suspense></code></pre></div>
+                <p>هذا يعني أن CartPage لن تُحمّل إلا عندما يحتاجها المستخدم فعلاً. إذا كان حجم صفحة السلة 50KB، فهذا يوفر 50KB من التحميل الأولي.</p>
+
+                <h2>3. Code Splitting في Vue</h2>
+                <p>في Vue، يمكنك استخدام Dynamic Imports مع Vue Router:</p>
+                <div class="code-block"><pre><code>const routes = [
+    {
+        path: '/cart',
+        component: () => import('./views/Cart.vue')
+    }
+];</code></pre></div>
+                <p>Vite (أداة البناء) ستقسم Cart.vue تلقائياً إلى ملف chunk منفصل.</p>
+
+                <h2>4. Code Splitting في Laravel مع Vite</h2>
+                <p>في Laravel، استخدم Vite مع Dynamic Imports:</p>
+                <div class="code-block"><pre><code>// resources/js/app.js
+import.meta.glob('../images/**'); // تحميل كسول للصور
+
+// استيراد ديناميكي لمكتبة ثقيلة
+const loadChart = async () => {
+    const Chart = await import('chart.js');
+    new Chart(...);
+};</code></pre></div>
+
+                <h2>5. استراتيجيات إضافية لتقليل زمن التحميل</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>الاستراتيجية</th><th>ماذا تفعل</th><th>التأثير</th></tr></thead>
+                    <tbody>
+                        <tr><td>Tree Shaking</td><td>إزالة الكود غير المستخدم من الـ bundle</td><td>يقلل حجم الملفات 10-30%</td></tr>
+                        <tr><td>Minification</td><td>ضغط JavaScript/CSS بإزالة المسافات والتعليقات</td><td>يقلل الحجم 30-50%</td></tr>
+                        <tr><td>Compression (Gzip/Brotli)</td><td>ضغط الملفات على مستوى السيرفر</td><td>يقلل النقل 60-80%</td></tr>
+                        <tr><td>Lazy Loading Images</td><td>تحميل الصور فقط عندما تقترب من الشاشة</td><td>يقلل وقت التحميل الأولي بشكل كبير</td></tr>
+                        <tr><td>Preload / Prefetch</td><td>تحميل الموارد المهمة مبكراً</td><td>يسرع التنقل بين الصفحات</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>6. مثال واقعي: متجر بـ 5000 منتج</h2>
+                <p>في أحد متاجر الإلكترونيات على Laravel + Vue، كان ملف app.js بحجم 1.8MB. الصفحة الرئيسية كانت تأخذ 4.5 ثانية للتحميل. بعد تطبيق Code Splitting:</p>
+                <ul>
+                    <li>قسمنا Dashboard الإدارة إلى chunk منفصل (600KB) يُحمّل فقط عند دخول /admin.</li>
+                    <li>قسمنا مكتبة Chart.js إلى chunk منفصل.</li>
+                    <li>أضفنا Lazy Loading للصور خارج الشاشة.</li>
+                </ul>
+                <p>النتيجة: حجم التحميل الأولي انخفض إلى 350KB، وزمن التحميل أصبح 1.2 ثانية. تحسين Core Web Vitals أدى إلى ارتفاع ترتيب الموقع في غوغل وزيادة المبيعات 12%.</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-tools"></i> <strong>أداة للتشخيص:</strong> استخدم <strong>Lighthouse</strong> في Chrome DevTools لترى توصيات محددة لتقليل حجم الـ JavaScript. قسم "Reduce unused JavaScript" سيخبرك بالضبط أي الملفات يجب تقسيمها.</p>
+                </div>
+
+                <h2>7. متى لا تحتاج Code Splitting؟</h2>
+                <p>إذا كان تطبيقك صغيراً (أقل من 20KB من JavaScript)، فلا داعي لتعقيد الأمور. Code Splitting يضيف تعقيداً بسيطاً (loading states)، ولا يستحق العناء إلا إذا كان حجم bundle يتجاوز 100KB. لكن للمتاجر الإلكترونية الكبيرة، هو ضرورة وليس رفاهية.</p>
+
+                <h2>خلاصة</h2>
+                <p>Code Splitting هو واحد من أقوى الأدوات لتحسين أداء تطبيقات الويب الكبيرة. ابدأ بتقسيم الصفحات الكبيرة (Dashboard، Cart)، والمكتبات الثقيلة (Charts، Editors)، واستخدم Lazy Loading للصور. راقب Lighthouse باستمرار، ولا تفرط في التقسيم لدرجة تعقيد الكود. التوازن هو المفتاح.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تدمج واتساب API بموقعك لزيادة المبيعات وتحسين خدمة العملاء - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تدمج واتساب API بموقعك لزيادة المبيعات وتحسين خدمة العملاء</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Technical Marketing</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>واتساب هو التطبيق الأول في الخليج. عملاؤك يستخدمونه يومياً، ويتوقعون أن يجدوا متجرك هناك. دمج WhatsApp Business API بموقعك ليس رفاهية، بل ضرورة تنافسية. سأشرح لك خطوات الدمج بالتفصيل، من التسجيل إلى إرسال أول رسالة تلقائية، مع أمثلة عملية من متاجر حقيقية.</p>
+
+                <h2>1. فهم أنواع WhatsApp Business</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>النوع</th><th>الوصف</th><th>التكلفة</th><th>مناسب لـ</th></tr></thead>
+                    <tbody>
+                        <tr><td>WhatsApp Business App</td><td>تطبيق الجوال المجاني</td><td>مجاني</td><td>محادثات يدوية، متاجر صغيرة جداً</td></tr>
+                        <tr><td>WhatsApp Cloud API</td><td>API سحابي من Meta</td><td>أول 1000 محادثة مجاناً شهرياً</td><td>أتمتة متوسطة، متاجر متوسطة</td></tr>
+                        <tr><td>WhatsApp Business API (BSP)</td><td>عبر مزود خدمة مثل Wati أو 360dialog</td><td>مدفوع (حوالي 50-200 ريال شهرياً)</td><td>أتمتة كاملة، متاجر كبيرة</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>2. البدء مع WhatsApp Cloud API</h2>
+                <p>أسهل طريقة للدمج هي Cloud API المقدمة من Meta مباشرة. خطوات التسجيل:</p>
+                <ol>
+                    <li>اذهب إلى <a href="https://developers.facebook.com" target="_blank">developers.facebook.com</a> وأنشئ تطبيقاً من نوع Business.</li>
+                    <li>أضف منتج WhatsApp، واختر Create App.</li>
+                    <li>ستحصل على معرف تطبيق (App ID) ورقم هاتف اختباري، و Access Token دائم.</li>
+                    <li>للإنتاج، ستحتاج لتوثيق حساب Business Manager.</li>
+                </ol>
+
+                <h2>3. إرسال رسالة من الـ Backend (Node.js)</h2>
+                <div class="code-block"><pre><code>const axios = require('axios');
+
+const WHATSAPP_TOKEN = 'your-access-token';
+const PHONE_NUMBER_ID = 'your-phone-number-id';
+
+async function sendWhatsAppMessage(to, templateName, parameters) {
+    try {
+        const response = await axios.post(
+            `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`,
+            {
+                messaging_product: 'whatsapp',
+                to: to, // 966512345678
+                type: 'template',
+                template: {
+                    name: templateName,
+                    language: { code: 'ar' },
+                    components: [{
+                        type: 'body',
+                        parameters: parameters // [{ type: 'text', text: 'حمدي' }, ...]
+                    }]
+                }
+            },
+            {
+                headers: {
+                    'Authorization': `Bearer ${WHATSAPP_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        console.log('تم الإرسال:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('خطأ في الإرسال:', error.response?.data || error.message);
+    }
+}
+
+// مثال: إرسال تأكيد طلب
+await sendWhatsAppMessage('966512345678', 'order_confirmation', [
+    { type: 'text', text: 'حمدي' },
+    { type: 'text', text: '12345' },
+    { type: 'text', text: '299 ريال' }
+]);</code></pre></div>
+
+                <h2>4. سيناريوهات عملية للتكامل</h2>
+                <ul>
+                    <li><strong>تأكيد الطلب:</strong> عند إنشاء طلب جديد، أرسل رسالة فورية: "مرحباً حمدي، تم استلام طلبك رقم 12345 بقيمة 299 ر.س. سنخبرك عند الشحن."</li>
+                    <li><strong>تحديث حالة الشحن:</strong> عند تغيير حالة الطلب إلى "تم الشحن"، أرسل رسالة: "تم شحن طلبك رقم 12345. شركة الشحن: أرامكس. رقم التتبع: 67890."</li>
+                    <li><strong>تذكير السلة المهملة:</strong> إذا أضاف العميل منتجات للسلة ولم يكمل الشراء، أرسل تذكيراً بعد ساعتين: "منتجاتك في السلة بانتظارك! أكمل الشراء الآن واحصل على خصم 5%."</li>
+                    <li><strong>طلب التقييم:</strong> بعد 3 أيام من تسليم الطلب، أرسل: "كيف كانت تجربتك مع منتج X؟ قيّمنا من 1 إلى 5."</li>
+                </ul>
+
+                <h2>5. استخدام Webhook لاستقبال ردود العملاء</h2>
+                <p>لجعل المحادثة تفاعلية، تحتاج لاستقبال رسائل العملاء عبر Webhook:</p>
+                <div class="code-block"><pre><code>// Laravel: routes/api.php
+Route::post('/webhooks/whatsapp', function(Request $request) {
+    $entry = $request->input('entry');
+    
+    foreach ($entry as $e) {
+        foreach ($e['changes'] as $change) {
+            if ($change['field'] === 'messages') {
+                foreach ($change['value']['messages'] ?? [] as $message) {
+                    $from = $message['from']; // رقم المرسل
+                    $text = $message['text']['body']; // نص الرسالة
+                    
+                    // خزّن في قاعدة البيانات
+                    WhatsAppMessage::create([
+                        'from' => $from,
+                        'message' => $text,
+                        'received_at' => now()
+                    ]);
+                    
+                    // رد تلقائي بسيط
+                    // (يحتاج لموافقة القالب من Meta)
+                }
+            }
+        }
+    }
+    
+    return response()->json(['success' => true]);
+});</code></pre></div>
+
+                <h2>6. تكاليف WhatsApp Cloud API</h2>
+                <p>أول 1000 محادثة شهرياً مجانية. بعد ذلك، التكلفة حوالي 0.05-0.10 ريال لكل محادثة (حسب البلد). المحادثة هي نافذة 24 ساعة بين العميل والنشاط التجاري. هذا يعني أن 1000 طلب شهرياً قد يكلفك 50-100 ريال فقط.</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-lightbulb"></i> <strong>من تجربتي:</strong> في أحد متاجر العطور، أضفنا إشعارات واتساب للطلبات والشحن. انخفضت استفسارات "أين طلبي؟" بنسبة 70%، وارتفع تقييم المتجر في غوغل بسبب سرعة التواصل. التكلفة كانت أقل من 80 ريالاً شهرياً.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>دمج واتساب API هو أحد أفضل الاستثمارات التقنية لمتجرك. ابدأ بـ Cloud API المجانية، وابنِ إشعارات الطلبات والشحن أولاً. كلما وفرت على العميل عناء السؤال، كلما زادت ثقته وولاؤه لمتجرك.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="technical-marketing.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Technical Marketing</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

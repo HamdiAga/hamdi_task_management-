@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أفضل ممارسات ربط الـ Frontend بالخلفية وتجنب أخطاء الـ CORS نهائياً - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">أفضل ممارسات ربط الـ Frontend بالخلفية وتجنب أخطاء الـ CORS نهائياً</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 9 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/cors-errors.jpg" alt="تجنب أخطاء CORS" class="cover-image">
+
+                <p>خطأ CORS هو أشهر خطأ يواجهه مطورو الويب عند ربط Frontend بـ Backend. "Access to fetch at 'https://api.example.com' from origin 'https://frontend.example.com' has been blocked by CORS policy" – جملة أرعبت كل مطور. في هذا المقال، سأشرح لك ما هو CORS بالضبط، ولماذا يوجد، وكيف تتجنبه باحترافية، مع سيناريوهات حقيقية من مشاريع React + Laravel API.</p>
+
+                <h2>1. ما هو CORS ولماذا هو موجود؟</h2>
+                <p>CORS اختصار لـ Cross-Origin Resource Sharing. هو آلية أمان في المتصفحات تمنع موقعاً (Origin) من عمل طلبات HTTP إلى Origin آخر، إلا إذا سمح الـ Origin الآخر بذلك صراحة.</p>
+                <p><strong>مثال:</strong> إذا كان Frontend على <code>https://myshop.com</code> وحاول الاتصال بـ API على <code>https://api.myshop.com</code>، فالمتصفح سيمنع الطلب لأن الـ Origin مختلف (subdomain مختلف). الحل هو أن يرسل السيرفر (الـ API) هيدرات خاصة تسمح لـ Frontend بالوصول.</p>
+
+                <h2>2. الحل في Laravel</h2>
+                <p>في Laravel، استخدم Middleware مخصص أو حزمة fruitcake/laravel-cors (أو الإعداد المدمج في Laravel 11):</p>
+                <div class="code-block"><pre><code>// config/cors.php
+return [
+    'paths' => ['api/*'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => ['https://myshop.com'],
+    'allowed_origins_patterns' => [],
+    'allowed_headers' => ['*'],
+    'exposed_headers' => [],
+    'max_age' => 0,
+    'supports_credentials' => true,
+];</code></pre></div>
+
+                <h2>3. الحل في Node.js (Express)</h2>
+                <div class="code-block"><pre><code>const cors = require('cors');
+app.use(cors({
+    origin: 'https://myshop.com',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));</code></pre></div>
+
+                <h2>4. سيناريو: React على Vercel و Laravel API على استضافة مشتركة</h2>
+                <p>في أحد مشاريعي، كان الـ Frontend على Vercel والـ Backend على MonsterASP. ظهر خطأ CORS. الأسباب:</p>
+                <ul>
+                    <li>نسيت إضافة origin الـ Frontend في إعدادات CORS.</li>
+                    <li>الـ Frontend كان يرسل طلبات بدون credentials، بينما الـ API يتطلب cookies.</li>
+                </ul>
+                <p>الحل: تأكد أن Frontend يرسل <code>credentials: 'include'</code> مع كل طلب fetch/axios، وأن السيرفر يسمح بـ <code>credentials: true</code>.</p>
+
+                <h2>5. سيناريو: طلبات Preflight (OPTIONS)</h2>
+                <p>عندما يرسل المتصفح طلباً مع هيدرات مخصصة (مثل Authorization) أو methods غير GET/POST، يرسل أولاً طلباً تمهيدياً (Preflight) من نوع OPTIONS. تأكد أن سيرفرك يستجيب لـ OPTIONS بشكل صحيح:</p>
+                <div class="code-block"><pre><code>// Laravel: في routes/api.php أو Middleware
+Route::options('{any}', function() {
+    return response('OK', 200);
+})->where('any', '.*');</code></pre></div>
+
+                <h2>6. CORS في بيئة التطوير المحلية</h2>
+                <p>إذا كنت تعمل محلياً (localhost:3000 لـ React و localhost:8000 لـ Laravel)، فستواجه CORS أيضاً. أسرع حل:</p>
+                <ul>
+                    <li><strong>في Laravel:</strong> أضف <code>'allowed_origins' => ['http://localhost:3000']</code>.</li>
+                    <li><strong>في React (Vite):</strong> استخدم proxy في <code>vite.config.js</code> ليتم توجيه طلبات /api إلى Laravel.</li>
+                </ul>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-lightbulb"></i> <strong>نصيحة ذهبية:</strong> لا تستخدم <code>'*'</code> في allowed_origins في بيئة الإنتاج أبداً. هذا يفتح API الخاص بك لأي موقع في العالم. حدد الـ origins المسموحة بدقة.</p>
+                </div>
+
+                <h2>7. مشاكل أخرى قد تخلطها مع CORS</h2>
+                <ul>
+                    <li><strong>خطأ 404 أو 500:</strong> أحياناً المتصفح يظهر خطأ CORS، والمشكلة الحقيقية أن الـ API يرجع 404 أو 500. تحقق من Network Tab أولاً.</li>
+                    <li><strong>Mixed Content:</strong> إذا كان Frontend على HTTPS والـ API على HTTP، المتصفح سيمنع الطلب. استخدم HTTPS دائماً.</li>
+                    <li><strong>جدار الحماية أو Cloudflare:</strong> تأكد أن إعدادات Cloudflare أو سيرفر الاستضافة لا تمنع هيدرات CORS.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>CORS ليس خطأ برمجياً، بل سياسة أمان. تعلم كيف تضبطه بشكل صحيح، وستوفر على نفسك ساعات من الحيرة. تذكر: حدد الـ origins، اسمح بـ credentials فقط إذا كنت تحتاجها، ولا تستخدم wildcard في الإنتاج.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

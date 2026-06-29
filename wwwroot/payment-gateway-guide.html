@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل المبرمج للتعامل مع بوابات الدفع: من PayPal إلى Stripe إلى الدفع المحلي - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">دليل المبرمج للتعامل مع بوابات الدفع: من PayPal إلى Stripe إلى الدفع المحلي</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Developer Full-Stack</span>
+                </div>
+            </header>
+            <div class="article-body">
+                <img src="images/payment-gateway-guide.jpg" alt="بوابات الدفع" class="cover-image">
+
+                <p>كل متجر إلكتروني يحتاج إلى بوابة دفع. لكن اختيار البوابة المناسبة وطريقة ربطها بشكل صحيح هو ما يفرق بين مطوّر مبتدئ ومطوّر محترف. في هذا الدليل العملي، سأشرح لك كيفية التعامل مع PayPal وStripe وبوابات الدفع المحلية في الخليج، مع التركيز على webhooks والأخطاء الشائعة وتجربتي الشخصية.</p>
+
+                <h2>1. فهم تدفق الدفع الإلكتروني</h2>
+                <p>أي بوابة دفع تعمل بنفس التدفق الأساسي:</p>
+                <ol>
+                    <li>المستخدم يضغط "ادفع الآن".</li>
+                    <li>الـ Frontend يرسل مبلغ العملية ومعرّف الطلب إلى الـ Backend.</li>
+                    <li>الـ Backend ينشئ جلسة دفع على بوابة الدفع ويستلم redirect_url أو token.</li>
+                    <li>يُوجّه المستخدم إلى صفحة الدفع الآمنة على بوابة الدفع.</li>
+                    <li>بعد إتمام الدفع، ترسل البوابة Webhook إلى عنوان خاص في الـ Backend.</li>
+                    <li>الـ Backend يتحقق من صحة الـ Webhook ويُحدّث حالة الطلب إلى "مدفوع".</li>
+                </ol>
+
+                <h2>2. PayPal – التكامل الكلاسيكي</h2>
+                <p>PayPal يوفر SDKs جاهزة، لكني أفضل التعامل مع REST API مباشرة للتحكم الكامل. خطوات الربط:</p>
+                <ul>
+                    <li>احصل على Client ID و Secret من PayPal Developer Dashboard.</li>
+                    <li>أنشئ Order عبر API:</li>
+                </ul>
+                <div class="code-block"><pre><code>POST /v2/checkout/orders
+{
+  "intent": "CAPTURE",
+  "purchase_units": [{
+    "amount": { "currency_code": "SAR", "value": "100.00" }
+  }]
+}</code></pre></div>
+                <ul>
+                    <li>استلم redirect_url ووجّه المستخدم.</li>
+                    <li>بعد العودة، نفّذ capture عبر API لتحصيل المبلغ فعلياً.</li>
+                </ul>
+                <p><strong>نصيحة:</strong> استخدم PayPal Sandbox بكثرة أثناء التطوير. ولا تنسَ تفعيل IPN (Instant Payment Notification) كطبقة احتياطية بجانب Webhooks.</p>
+
+                <h2>3. Stripe – المفضل للمطورين</h2>
+                <p>Stripe يتميز بوثائقه الممتازة وSDK القوي. التكامل عبر Stripe Checkout أو Payment Intents:</p>
+                <div class="code-block"><pre><code>// Node.js مثال
+const stripe = require('stripe')('sk_test_...');
+const session = await stripe.checkout.sessions.create({
+  payment_method_types: ['card'],
+  line_items: [{
+    price_data: {
+      currency: 'sar',
+      product_data: { name: 'منتج تجريبي' },
+      unit_amount: 10000, // بالهللات
+    },
+    quantity: 1,
+  }],
+  mode: 'payment',
+  success_url: 'https://mysite.com/success',
+  cancel_url: 'https://mysite.com/cancel',
+});</code></pre></div>
+                <p>Stripe يعطيك جلسة، توجّه المستخدم إلى رابط الجلسة، وبعد الدفع تستلم Webhook لتأكيد العملية. أهم شيء: تحقق من توقيع Webhook باستخدام مفتاح signing secret.</p>
+
+                <h2>4. الدفع المحلي في الخليج</h2>
+                <p>في السعودية، بوابات مثل مدى (عبر HyperPay أو Tap) وتمارا وSTC Pay هي الأساس. تحدثنا عن تفاصيلها في مقال "ربط أنظمة المدفوعات الإلكترونية في السعودية والخليج". لكن أضيف هنا: عند التعامل مع بوابات محلية، انتبه لـ:</p>
+                <ul>
+                    <li><strong>العملة:</strong> دائماً SAR، وتأكد من دعم الهللات.</li>
+                    <li><strong>اللغة:</strong> أرسل locale=ar لواجهة عربية.</li>
+                    <li><strong>رقم الجوال:</strong> بعض البوابات تتطلب إرسال رقم الجوال بصيغة 9665xxxxxxxx لإرسال رموز تأكيد.</li>
+                </ul>
+
+                <h2>5. إدارة Webhooks والتحقق من الأمان</h2>
+                <p>الـ Webhook هو أساس تكامل الدفع. بدونه، لن تعرف أن المستخدم دفع. أفضل الممارسات:</p>
+                <ul>
+                    <li>تحقق من التوقيع (HMAC signature) دائماً.</li>
+                    <li>سجّل كل Webhook في جدول payment_webhooks قبل معالجته.</li>
+                    <li>إذا فشلت المعالجة، حاول مرة أخرى (retry) لكن مع منع التكرار (idempotency).</li>
+                    <li>استخدم queues لمعالجة Webhooks الثقيلة (مثل إرسال إشعارات).</li>
+                </ul>
+
+                <div class="code-block"><pre><code>// مثال Laravel للتحقق من توقيع Stripe Webhook
+$payload = $request->getContent();
+$sig_header = $request->header('Stripe-Signature');
+try {
+    $event = \Stripe\Webhook::constructEvent(
+        $payload, $sig_header, config('services.stripe.webhook_secret')
+    );
+} catch (\Exception $e) {
+    return response()->json(['error' => 'Invalid signature'], 400);
+}</code></pre></div>
+
+                <h2>6. أخطاء شائعة يجب تجنبها</h2>
+                <ul>
+                    <li><strong>عدم اختبار Sandbox كافياً:</strong> اختبر كل سيناريو: دفع ناجح، فشل، إلغاء، استرداد.</li>
+                    <li><strong>تخزين بيانات البطاقة:</strong> لا تفعلها أبداً. استخدم tokens.</li>
+                    <li><strong>عدم التعامل مع فرق التوقيت:</strong> أحياناً Webhook يصل قبل أن يكتمل تحديث الصفحة، فتظهر حالة "قيد الانتظار" للمستخدم. استخدم AJAX polling أو WebSocket.</li>
+                    <li><strong>نسيان اختبار الاسترداد (Refund):</strong> بعض البوابات المحلية تتطلب خطوات إضافية للاسترداد الجزئي.</li>
+                </ul>
+
+                <h2>خلاصة</h2>
+                <p>بوابات الدفع هي شريان المتجر. تعلم كيف تتعامل معها باحترافية، وركز على الأمان (Webhooks signature) وتجربة المستخدم بعد الدفع. ابدأ ببوابة واحدة، أتقنها، ثم أضف غيرها حسب احتياج السوق.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="fullstack-web-dev.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى تطوير المواقع والتطبيقات</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

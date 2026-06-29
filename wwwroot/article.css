@@ -1,0 +1,198 @@
+/* ========== تنسيقات المقالات ========== */
+.article-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0; /* أزلنا الحشو الداخلي ليحتضن الرأس الجديد */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden; /* لضمان انسيابية الزوايا */
+}
+
+/* رأس المقالة بتصميم Hero */
+.article-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 50px 40px 40px;
+    text-align: center;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+.article-title {
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.article-meta {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+.article-meta i {
+    margin-left: 5px;
+}
+
+/* جسم المقالة */
+.article-body {
+    padding: 40px;
+}
+.article-body p {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.9;
+}
+.article-body h2 {
+    font-size: 1.7rem;
+    color: #2c3e50;
+    margin: 40px 0 20px;
+    border-right: 4px solid #3498db;
+    padding-right: 12px;
+}
+.article-body h3 {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    margin: 30px 0 15px;
+}
+.article-body ul, .article-body ol {
+    margin-bottom: 20px;
+    padding-right: 20px;
+}
+.article-body li {
+    margin-bottom: 10px;
+    line-height: 1.8;
+}
+.article-body blockquote {
+    background: #f8f9fa;
+    border-right: 4px solid #e67e22;
+    padding: 20px;
+    margin: 30px 0;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #555;
+    transition: all 0.3s;
+}
+.article-body blockquote:hover {
+    background: #eef6ff;
+    border-right-color: #3498db;
+}
+.article-body blockquote p {
+    margin: 0;
+}
+.cover-image {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* جداول المقارنة */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.comparison-table th {
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    text-align: right;
+    font-weight: 600;
+}
+.comparison-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+.comparison-table tr:nth-child(even) td {
+    background: #f8f9fa;
+}
+.comparison-table tr:hover td {
+    background: #eef6ff;
+}
+
+/* تنبيه / فقرة مميزة */
+.tip-box {
+    background: #eef6ff;
+    border: 1px solid #3498db;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    transition: all 0.3s;
+}
+.tip-box:hover {
+    background: #e0efff;
+    border-color: #2980b9;
+}
+.tip-box i {
+    color: #3498db;
+    margin-left: 8px;
+}
+
+/* صندوق الأكواد البرمجية */
+.code-block {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    border-radius: 12px;
+    padding: 25px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    direction: ltr;
+    text-align: left;
+    position: relative;
+}
+.code-block pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* زر العودة */
+.back-button-container {
+    max-width: 900px;
+    margin: 20px auto;
+    text-align: center;
+    padding: 0 20px;
+}
+.back-button {
+    display: inline-block;
+    padding: 10px 25px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.back-button:hover {
+    background-color: #2c3e50;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* تجاوب */
+@media (max-width: 768px) {
+    .article-header {
+        padding: 30px 20px;
+    }
+    .article-title {
+        font-size: 1.8rem;
+    }
+    .article-body {
+        padding: 20px;
+    }
+}

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيف تستخدم ChatGPT API لبناء بوت خدمة عملاء ذكي لموقعك بدون خبرة سابقة - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">كيف تستخدم ChatGPT API لبناء بوت خدمة عملاء ذكي لموقعك بدون خبرة سابقة</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Automation & AI</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>تخيل أن موقعك يرد على استفسارات العملاء فوراً، 24 ساعة يومياً، 7 أيام أسبوعياً، وبدقة مذهلة. هذا ليس خيالاً علمياً، بل واقع باستخدام ChatGPT API. في هذا الدليل العملي، سأريك خطوة بخطوة كيف تبني بوت خدمة عملاء ذكي لموقعك، حتى لو لم تستخدم ChatGPT API من قبل.</p>
+
+                <h2>1. لماذا ChatGPT API وليس بوتاً تقليدياً؟</h2>
+                <p>البوتات التقليدية تعتمد على ردود مبرمجة مسبقاً: "إذا قال العميل X، رد بـ Y". هذا يعمل لـ 10 أسئلة، لكن ماذا عن السؤال الحادي عشر؟ ChatGPT يفهم اللغة الطبيعية، يستطيع الرد على أسئلة لم تبرمجها، ويتذكر سياق المحادثة. الفارق يشبه الفرق بين آلة بيع وموظف خدمة عملاء حقيقي.</p>
+
+                <h2>2. المتطلبات الأساسية</h2>
+                <ul>
+                    <li>مفتاح API من OpenAI (تحتاج حساباً ولو برصيد 5 دولارات يكفي لآلاف المحادثات).</li>
+                    <li>سيرفر يدعم Node.js أو PHP أو بايثون (أي لغة تستطيع عمل HTTP Requests).</li>
+                    <li>صفحة HTML بسيطة للواجهة.</li>
+                </ul>
+
+                <h2>3. بناء الـ Backend في Node.js</h2>
+                <div class="code-block"><pre><code>// server.js
+const express = require('express');
+const cors = require('cors');
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const OPENAI_API_KEY = 'sk-your-key-here';
+
+app.post('/api/chat', async (req, res) => {
+    try {
+        const userMessage = req.body.message;
+        const conversationHistory = req.body.history || [];
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `أنت بوت خدمة عملاء لمتجر إلكتروني اسمه "متجري".
+مهامك: الرد على استفسارات العملاء، مساعدتهم في تتبع الطلبات،
+وتقديم معلومات عن المنتجات. كن مهذباً ومفيداً.
+إذا سألك العميل عن طلب، اطلب منه رقم الطلب.
+إذا سألك عن منتج غير موجود، اقترح منتجات بديلة.
+تحدث باللغة العربية الفصحى مع لمسة ودية.`
+                    },
+                    ...conversationHistory,
+                    { role: 'user', content: userMessage }
+                ],
+                temperature: 0.7,
+                max_tokens: 300
+            })
+        });
+
+        const data = await response.json();
+        const botReply = data.choices[0].message.content;
+
+        res.json({ reply: botReply });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ reply: 'عذراً، حدث خطأ.' });
+    }
+});
+
+app.listen(3000, () => console.log('Chatbot API running on port 3000'));</code></pre></div>
+
+                <h2>4. الواجهة الأمامية (HTML + JavaScript)</h2>
+                <div class="code-block"><pre><code>&lt;!-- chatbot.html --&gt;
+&lt;div id="chatbot-widget"&gt;
+    &lt;div id="chat-messages"&gt;&lt;/div&gt;
+    &lt;div id="chat-input-area"&gt;
+        &lt;input type="text" id="user-input" placeholder="اكتب سؤالك هنا..." /&gt;
+        &lt;button onclick="sendMessage()"&gt;إرسال&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+let conversationHistory = [];
+
+async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const message = input.value.trim();
+    if (!message) return;
+
+    // أضف رسالة المستخدم للواجهة
+    addMessage('user', message);
+    input.value = '';
+
+    // أرسل إلى الـ Backend
+    const response = await fetch('https://api.yoursite.com/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, history: conversationHistory })
+    });
+
+    const data = await response.json();
+    addMessage('bot', data.reply);
+
+    // حدّث تاريخ المحادثة
+    conversationHistory.push({ role: 'user', content: message });
+    conversationHistory.push({ role: 'assistant', content: data.reply });
+}
+
+function addMessage(sender, text) {
+    const messagesDiv = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = sender === 'user' ? 'user-message' : 'bot-message';
+    msgDiv.textContent = text;
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+&lt;/script&gt;</code></pre></div>
+
+                <h2>5. ربط البوت بقاعدة بيانات المتجر (للاستفسارات الحقيقية)</h2>
+                <p>الخطوة السابقة تعطي بوتاً يتحدث بشكل عام. لكن ماذا لو سأل العميل "أين طلبي رقم 12345"؟ هنا تحتاج Function Calling:</p>
+                <div class="code-block"><pre><code>// أضف هذه الدالة في الـ Backend قبل استدعاء ChatGPT
+async function getOrderStatus(orderId) {
+    const order = await db.query('SELECT status FROM orders WHERE id = ?', [orderId]);
+    return order ? `حالة طلبك رقم ${orderId}: ${order.status}` : 'لم أجد طلباً بهذا الرقم.';
+}
+
+// في الرسالة للنظام (system prompt)، أضف:
+"إذا سألك العميل عن طلب، استخدم رقم الطلب للبحث في قاعدة البيانات.
+قاعدة البيانات تحتوي على طلبات حقيقية. رقم الطلب يكون رقماً صحيحاً."</code></pre></div>
+                <p>لتطبيق Function Calling بشكل كامل، استخدم ميزة tools في OpenAI API لتخبر ChatGPT عن الدوال المتاحة، وهو سيقرر متى يستدعيها.</p>
+
+                <h2>6. تكاليف التشغيل</h2>
+                <p>باستخدام GPT-4o-mini، تكلفة 1000 محادثة قصيرة (حوالي 50 سنتاً). هذا يعني أن 5 دولارات تكفي لشهر كامل من الخدمة لمتجر متوسط. التكلفة أقل بكثير من توظيف موظف خدمة عملاء.</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-shield-alt"></i> <strong>أمان:</strong> لا ترسل بيانات حساسة (أرقام بطاقات، كلمات مرور) إلى OpenAI API. استخدم نظاماً هجيناً: البوت يجيب على الأسئلة العامة، ويحول الأسئلة الحساسة لموظف بشري.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>ChatGPT API حوّل بناء بوتات ذكية من مشروع معقد يحتاج فريق AI إلى مهمة يمكن لمطور واحد إنجازها في يوم. ابدأ بالـ system prompt الجيد، اربطه بقاعدة بياناتك، وراقب المحادثات لتحسينه باستمرار. عملاؤك سيقدرون الردود الفورية، وستوفر ساعات من خدمة العملاء اليدوية.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="automation-ai.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Automation & AI</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>

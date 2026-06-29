@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اكسل للمبرمجين والتقنيين: دوال لا تعرفها ستجعلك تدهش مديرك - مدونة حمدي أبو حاتم</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="article.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main>
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">اكسل للمبرمجين والتقنيين: دوال لا تعرفها ستجعلك تدهش مديرك</h1>
+                <div class="article-meta">
+                    <span><i class="fas fa-calendar-alt"></i> 10 يونيو 2026</span>
+                    <span><i class="fas fa-user"></i> حمدي فواز أبو حاتم</span>
+                    <span><i class="fas fa-folder"></i> Office Tools</span>
+                </div>
+            </header>
+            <div class="article-body">
+
+                <p>معظم المبرمجين ينظرون إلى Excel كأداة "للمحاسبين"، لكنهم لا يدركون أن Excel هو في جوهره محرك قواعد بيانات مع واجهة رسومية. عندما تتعامل مع Excel كالمبرمج لا كالمستخدم العادي، تكتشف إمكانيات مذهلة. سأشاركك أقوى الدوال والتقنيات التي ستجعلك تنجز في دقائق ما يأخذ زملاءك ساعات.</p>
+
+                <h2>1. لماذا Excel صديق المبرمج الخفي؟</h2>
+                <ul>
+                    <li>يحتوي على لغة برمجة كاملة (VBA) ومحرك صيغ قوي (DAX في Power Pivot).</li>
+                    <li>يدعم Power Query للتعامل مع البيانات الضخمة ومصادر متعددة.</li>
+                    <li>يمكن ربطه مباشرة بقواعد البيانات (SQL Server, MySQL, PostgreSQL).</li>
+                    <li>يدعم JSON و XML.</li>
+                    <li>مع Excel Labs (إضافة مايكروسوفت)، يمكنك استخدام Python داخل Excel!</li>
+                </ul>
+
+                <h2>2. دوال متقدمة ستغير تعاملك مع البيانات</h2>
+                <table class="comparison-table">
+                    <thead><tr><th>الدالة</th><th>ماذا تفعل</th><th>مثال عملي</th></tr></thead>
+                    <tbody>
+                        <tr><td>XLOOKUP</td><td>بحث فائق، بديل VLOOKUP المحدود</td><td>ابحث عن سعر منتج من جدول آخر</td></tr>
+                        <tr><td>FILTER</td><td>تصفية بيانات بناءً على شرط</td><td>اعرض كل الطلبات المعلقة فقط</td></tr>
+                        <tr><td>SORT / SORTBY</td><td>ترتيب ديناميكي</td><td>رتّب المنتجات حسب المبيعات تنازلياً</td></tr>
+                        <tr><td>UNIQUE</td><td>استخراج القيم الفريدة فقط</td><td>ما المدن التي وصلت إليها الشحنات؟</td></tr>
+                        <tr><td>TEXTJOIN</td><td>دمج نصوص مع فاصل</td><td>اجمع أسماء المندوبين في خلية واحدة</td></tr>
+                        <tr><td>LAMBDA</td><td>تعريف دوال مخصصة بدون VBA</td><td>أنشئ دالة تحسب الضريبة 15%</td></tr>
+                    </tbody>
+                </table>
+
+                <h2>3. LAMBDA – اكتب دوالك الخاصة كالمبرمج</h2>
+                <p>هذه أقوى ميزة للمبرمجين. تستطيع تعريف دالة مخصصة قابلة لإعادة الاستخدام، تماماً مثل function في الكود:</p>
+                <div class="code-block"><pre><code>=LAMBDA(price, price * 1.15)</code></pre></div>
+                <p>لحفظها كدالة دائمة: Name Manager > New > Name: "AddVAT" > Refers to: <code>=LAMBDA(price, price * 1.15)</code>. الآن تستخدمها في أي خلية: <code>=AddVAT(A1)</code>. هذا يشبه تماماً كتابة دالة في JavaScript.</p>
+
+                <h2>4. Power Query – ETL داخل Excel</h2>
+                <p>Power Query هي أداة ETL (Extract, Transform, Load) مدمجة في Excel. تستطيع:</p>
+                <ul>
+                    <li><strong>دمج ملفات CSV متعددة:</strong> إذا كان لديك تقارير يومية منفصلة، فادمجها بنقرة واحدة.</li>
+                    <li><strong>استيراد JSON مباشرة:</strong> إذا كان لديك API يرجع JSON، فاستورده مباشرة إلى Excel.</li>
+                    <li><strong>تنظيف البيانات:</strong> إزالة الفراغات، تغيير الأنواع، دمج الأعمدة.</li>
+                    <li><strong>الاتصال بقاعدة بيانات:</strong> SQL Server، MySQL، وحتى MongoDB.</li>
+                </ul>
+                <p><strong>لماذا يهمك كمبرمج:</strong> Power Query يشبه كتابة LINQ في C# أو Pipeline في Python. الخطوات مسجلة وقابلة لإعادة التشغيل، مما يعني أنك تبني "برنامجاً" داخل Excel.</p>
+
+                <h2>5. ربط Excel بقاعدة بيانات MySQL مباشرة</h2>
+                <ol>
+                    <li>Data > Get Data > From Database > From MySQL Database.</li>
+                    <li>أدخل Server (localhost أو IP)، Database name، Username، Password.</li>
+                    <li>اختر الجدول أو اكتب استعلام SQL مخصص.</li>
+                    <li>Excel سيحمل البيانات مباشرة، مع إمكانية تحديثها بنقرة واحدة.</li>
+                </ol>
+                <p>هذا يعني أن مديرك يفتح Excel، يضغط Refresh، ويرى أرقام المبيعات الحية من قاعدة بيانات متجرك!</p>
+
+                <h2>6. أتمتة Excel باستخدام Python (عبر Excel Labs)</h2>
+                <p>أضف إضافة Excel Labs من متجر الإضافات، وستحصل على محرر Python داخل Excel:</p>
+                <div class="code-block"><pre><code>import pandas as pd
+
+# قراءة بيانات من Excel
+df = xl("A1:D100", headers=True)
+
+# تجميع البيانات
+summary = df.groupby('category')['sales'].sum().reset_index()
+
+# كتابة النتيجة في Excel
+xl("F1", summary)</code></pre></div>
+                <p>النتيجة: قوة Python الكاملة داخل Excel، بدون تصدير أو استيراد.</p>
+
+                <div class="tip-box">
+                    <p><i class="fas fa-gem"></i> <strong>من تجربتي:</strong> في أحد المشاريع، كان المدير يقضي 3 ساعات كل اثنين في دمج 7 ملفات مبيعات يدوياً. بنيت له Power Query يجمعها تلقائياً، مع Pivot Table محدثة بنقرة Refresh. العملية صارت تأخذ 30 ثانية. هذا النوع من الأتمتة هو ما يجعل المبرمج "ساحراً" في نظر الإدارة.</p>
+                </div>
+
+                <h2>خلاصة</h2>
+                <p>Excel ليس مجرد جداول. هو محرك قواعد بيانات، لغة برمجة، وأداة ETL في آن واحد. تعلم XLOOKUP، LAMBDA، Power Query، وربطه بقاعدة البيانات. هذه المهارات تجعلك تحل مشاكل الأعمال في دقائق، وتدهش مديرك.</p>
+            </div>
+        </article>
+        <div class="back-button-container">
+            <a href="office-tools.html" class="back-button"><i class="fas fa-arrow-right"></i> العودة إلى Office Tools</a>
+        </div>
+    </main>
+    <div id="footer-placeholder"></div>
+    <script src="loadComponents.js"></script>
+</body>
+</html>
