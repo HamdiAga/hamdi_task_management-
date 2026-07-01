@@ -179,4 +179,3 @@ document.addEventListener('DOMContentLoaded', function() {
     loadComponent('header.html', 'header-placeholder');
     loadComponent('footer.html', 'footer-placeholder');
 });
-
